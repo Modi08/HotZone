@@ -49,6 +49,10 @@ void processMsg(
       });
       break;
     case 203: // User List recived
-      saveDataToLocalStorage("userList", data["userList"]);
+      if (data["userList"] != "[]") {
+        saveDataToLocalStorage("userList", data["userList"]);
+      } else {
+        saveDataToLocalStorage("userList", "[0]");
+      }
   }
 }

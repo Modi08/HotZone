@@ -36,20 +36,26 @@ class _UserpageState extends State<Userpage> {
   void initState() {
     super.initState();
     saveDataToLocalStorage("userList", "[]");
-    widget.socketChannel.sink
-        .add(jsonEncode({"action": "userDetails", "userId": widget.userId}));
+    readDataFromLocalStorage("cords").then((data) {
+      widget.socketChannel.sink.add(jsonEncode(
+          {"action": "userDetails", "userId": widget.userId, "roomId": data}));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     readDataFromLocalStorage("userList").then((data) {
-      if (data != "[]") {
+      if (data != "[]" && data != "[0]") {
         if (userList.length != jsonDecode(data!).length) {
           setState(() {
             userList = jsonDecode(data);
             userWidgetList = buildUserItemList(userList);
           });
         }
+      } else if (data == "[0]") {
+        setState(() {
+          userList = [0];
+        });
       } else {
         setState(() {
           userList = [];
@@ -60,11 +66,11 @@ class _UserpageState extends State<Userpage> {
     return userList.isEmpty
         ? const Center(
             child: SizedBox(child: CircularProgressIndicator.adaptive()))
-        : Padding(
+        : userList[0] != 0 ?
+        Padding(
             padding: const EdgeInsets.all(20),
-            child: GridView.count(
-              crossAxisCount: 4,
-              children: userWidgetList
-            ));
+            child: GridView.count(crossAxisCount: 4, children: userWidgetList)) :
+          const Center(
+            child: SizedBox(child: Text("No Users Found")));
   }
 }
