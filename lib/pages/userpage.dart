@@ -20,16 +20,28 @@ class _UserpageState extends State<Userpage> {
   List<dynamic> userList = [];
   List<Widget> userWidgetList = [];
 
+int getCrossAxisCount(int childCount) {
+    print(childCount);
+    if (childCount == 1) {
+      return 1;
+    } else if (childCount < 3) {
+      return 2;
+    } else {
+      return 3;
+    }
+  }
+  
   List<Widget> buildUserItemList(List<dynamic> userList) {
     List<Widget> userWidgetList = userList
-        .map((document) => buildUserItem(document["email"], document["name"]))
+        .map((document) =>
+            buildUserItem(document["email"], document["name"], userList.length))
         .toList();
 
     return userWidgetList;
   }
 
-  Widget buildUserItem(String email, String name) {
-    return UserTile(email: email, name: name);
+  Widget buildUserItem(String email, String name, int length) {
+    return UserTile(email: email, name: name, crossAxisCount: getCrossAxisCount(length));
   }
 
   @override
@@ -44,6 +56,7 @@ class _UserpageState extends State<Userpage> {
 
   @override
   Widget build(BuildContext context) {
+    int crossAxisCount = getCrossAxisCount(userWidgetList.length);
     readDataFromLocalStorage("userList").then((data) {
       if (data != "[]" && data != "[0]") {
         if (userList.length != jsonDecode(data!).length) {
@@ -62,15 +75,22 @@ class _UserpageState extends State<Userpage> {
         });
       }
     });
-
     return userList.isEmpty
         ? const Center(
             child: SizedBox(child: CircularProgressIndicator.adaptive()))
-        : userList[0] != 0 ?
-        Padding(
-            padding: const EdgeInsets.all(20),
-            child: GridView.count(crossAxisCount: 4, children: userWidgetList)) :
-          const Center(
-            child: SizedBox(child: Text("No Users Found")));
+        : userList[0] != 0
+            ? Padding(
+                padding: crossAxisCount == 1
+                    ? const EdgeInsets.all(110)
+                    : crossAxisCount == 2
+                        ? const EdgeInsets.all(20)
+                        : const EdgeInsets.all(8),
+                child: GridView.count(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 18,
+                    crossAxisSpacing: 18,
+                    children: userWidgetList),
+              )
+            : const Center(child: SizedBox(child: Text("No Users Found")));
   }
 }

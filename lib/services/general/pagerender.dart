@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:location/location.dart';
 import 'package:nearmessageapp/components/panel.dart';
-import 'package:nearmessageapp/pages/activiespage.dart';
+import 'package:nearmessageapp/pages/chessGame.dart';
 import 'package:nearmessageapp/pages/homepage.dart';
 import 'package:nearmessageapp/pages/userpage.dart';
 import 'package:nearmessageapp/services/general/socket.dart';
@@ -50,7 +50,6 @@ class _PageRenderState extends State<PageRender> {
     setState(() {
       pageSelected = pageNum;
     });
-    print(pageSelected);
   }
 
   @override
@@ -70,13 +69,17 @@ class _PageRenderState extends State<PageRender> {
 
     return Scaffold(
         appBar: AppBar(
-            toolbarHeight: 70,
+            toolbarHeight: 100,
             backgroundColor: const Color.fromARGB(255, 0, 34, 255),
             title: Column(
               children: [
                 Row(
                   children: <Widget>[
-                    Text(widget.title, style: const TextStyle(color: Color.fromRGBO(255, 255, 255, 1)),),
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                          color: Color.fromRGBO(255, 255, 255, 1)),
+                    ),
                     const Spacer(),
                     IconButton(
                         onPressed: () {

@@ -50,7 +50,8 @@ void processMsg(
       break;
     case 203: // User List recived
       if (data["userList"] != "[]") {
-        saveDataToLocalStorage("userList", data["userList"]);
+        var message = jsonDecode(data["userList"])[0];
+        saveDataToLocalStorage("userList", jsonEncode([message]));
       } else {
         saveDataToLocalStorage("userList", "[0]");
       }

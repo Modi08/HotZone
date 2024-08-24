@@ -342,7 +342,13 @@ class _ChessGameState extends State<ChessGame> {
                 title: const Text("CHECK MATE"),
                 actions: [
                   TextButton(
-                      onPressed: resetGame, child: const Text("Play Again"))
+                      onPressed: resetGame, child: const Text("Play Again")),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Exit"))
                 ],
               ));
     }
@@ -428,8 +434,10 @@ class _ChessGameState extends State<ChessGame> {
     return true;
   }
 
-  void resetGame() {
-    Navigator.pop(context);
+  void resetGame({bool needToClearScreen = true}) {
+    if (needToClearScreen) {
+      Navigator.pop(context);
+    }
     initializeBoard();
     setState(() {
       selectedPiece = null;
@@ -454,6 +462,22 @@ class _ChessGameState extends State<ChessGame> {
     return Scaffold(
         backgroundColor: backgroundColor,
         body: Column(children: [
+          const SizedBox(height: 30),
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () {
+                    resetGame(needToClearScreen: false);
+                  },
+                  icon: const Icon(Icons.restart_alt_sharp)),
+              const Spacer(),
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.logout))
+            ],
+          ),
           Expanded(
               child: GridView.builder(
                   itemCount: whitePiecesTaken.length,
@@ -463,9 +487,14 @@ class _ChessGameState extends State<ChessGame> {
                   itemBuilder: (context, index) => DeadPiece(
                       imagePath: whitePiecesTaken[index].imagePath,
                       isWhite: true))),
-          Text(checkStatus ? "CHECK!!" : ""),
+          Text(
+            checkStatus ? "CHECK!!" : "",
+            style: const TextStyle(
+              fontSize: 25,
+            ),
+          ),
           Expanded(
-            flex: 3,
+            flex: 4,
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 8, childAspectRatio: 1.2),
