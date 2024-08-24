@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:location/location.dart';
 import 'package:nearmessageapp/components/panel.dart';
-import 'package:nearmessageapp/pages/chessGame.dart';
+import 'package:nearmessageapp/services/chess/chessGame.dart';
 import 'package:nearmessageapp/pages/homepage.dart';
 import 'package:nearmessageapp/pages/userpage.dart';
 import 'package:nearmessageapp/services/general/socket.dart';
@@ -66,6 +66,21 @@ class _PageRenderState extends State<PageRender> {
   @override
   Widget build(BuildContext context) {
     requestLocationPermission();
+    Future<String?> isUserChallenged =
+        readDataFromLocalStorage("userChallenge");
+    isUserChallenged.then((data) {
+      if (data == null) {
+        return null;
+      }
+      
+      Map<String, dynamic> res = jsonDecode(data);
+
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("${res["username"]}"),
+              ));
+    });
 
     return Scaffold(
         appBar: AppBar(

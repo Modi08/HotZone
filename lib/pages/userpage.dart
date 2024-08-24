@@ -20,8 +20,7 @@ class _UserpageState extends State<Userpage> {
   List<dynamic> userList = [];
   List<Widget> userWidgetList = [];
 
-int getCrossAxisCount(int childCount) {
-    print(childCount);
+  int getCrossAxisCount(int childCount) {
     if (childCount == 1) {
       return 1;
     } else if (childCount < 3) {
@@ -30,7 +29,7 @@ int getCrossAxisCount(int childCount) {
       return 3;
     }
   }
-  
+
   List<Widget> buildUserItemList(List<dynamic> userList) {
     List<Widget> userWidgetList = userList
         .map((document) =>
@@ -41,7 +40,8 @@ int getCrossAxisCount(int childCount) {
   }
 
   Widget buildUserItem(String email, String name, int length) {
-    return UserTile(email: email, name: name, crossAxisCount: getCrossAxisCount(length));
+    return UserTile(
+        email: email, name: name, crossAxisCount: getCrossAxisCount(length), socketChannel: widget.socketChannel,);
   }
 
   @override
@@ -57,6 +57,7 @@ int getCrossAxisCount(int childCount) {
   @override
   Widget build(BuildContext context) {
     int crossAxisCount = getCrossAxisCount(userWidgetList.length);
+
     readDataFromLocalStorage("userList").then((data) {
       if (data != "[]" && data != "[0]") {
         if (userList.length != jsonDecode(data!).length) {
@@ -75,6 +76,7 @@ int getCrossAxisCount(int childCount) {
         });
       }
     });
+  
     return userList.isEmpty
         ? const Center(
             child: SizedBox(child: CircularProgressIndicator.adaptive()))

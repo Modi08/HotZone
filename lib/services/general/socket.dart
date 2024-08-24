@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:nearmessageapp/services/general/localstorage.dart';
 
@@ -55,5 +56,7 @@ void processMsg(
       } else {
         saveDataToLocalStorage("userList", "[0]");
       }
+    case 204:
+      saveDataToLocalStorage("userChallenge", data["body"]);
   }
 }

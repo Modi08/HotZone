@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/chess/deadpiece.dart';
 import 'package:nearmessageapp/components/chess/piece.dart';
