@@ -65,15 +65,21 @@ class _UserTileState extends State<UserTile> {
                           PopupMenuItem(
                             child: const Text('Play Chess Game'),
                             onTap: () {
-                              readDataFromLocalStorage("usernname").then((data) {
-                              widget.socketChannel.sink.add(jsonEncode({
-                                "action": "challengeUsers",
-                                "username": data,
-                                "target":
-                                    sha256.convert(utf8.encode(widget.email)).toString(),
-                                "type": "chess",
-                                "msg": "I challenge you to a chess match"
-                              }));});
+                              readDataFromLocalStorage("username")
+                                  .then((username) {
+                                readDataFromLocalStorage("userId")
+                                    .then((userId) {
+                                  widget.socketChannel.sink.add(jsonEncode({
+                                    "action": "challengeUsers",
+                                    "username": username,
+                                    "target": sha256
+                                        .convert(utf8.encode(widget.email))
+                                        .toString(),
+                                    "type": "chess",
+                                    "userId" : userId
+                                  }));
+                                });
+                              });
 
                               showDialog(
                                   context: context,

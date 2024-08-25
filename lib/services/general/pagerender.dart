@@ -26,6 +26,12 @@ class _PageRenderState extends State<PageRender> {
   String? userId = "";
   int pageSelected = 0;
 
+  void refreshPage() {
+    setState(() {
+      pageSelected = pageSelected;
+    });
+  }
+
   void joinRoom(data) async {
     Future<String?> parUserID = readDataFromLocalStorage("userId");
 
@@ -42,7 +48,7 @@ class _PageRenderState extends State<PageRender> {
       });
       socket.sink.add(jsonEncode(
           {"action": "ChatDetails", "lat": data[0], "long": data[1]}));
-      listendMsg(socket);
+      listendMsg(socket, refreshPage);
     });
   }
 
@@ -66,20 +72,65 @@ class _PageRenderState extends State<PageRender> {
   @override
   Widget build(BuildContext context) {
     requestLocationPermission();
-    Future<String?> isUserChallenged =
-        readDataFromLocalStorage("userChallenge");
-    isUserChallenged.then((data) {
-      if (data == null) {
+
+    readDataFromLocalStorage("userChallenge").then((data) {
+      if (data == null || data == "") {
         return null;
       }
-      
+
       Map<String, dynamic> res = jsonDecode(data);
 
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text("${res["username"]}"),
+                title: const Text("New Game Challenge",
+                    style: TextStyle(fontSize: 25)),
+                actions: [
+                  Column(
+                    children: [
+                      Text(
+                        "${res["username"]} challenged you to a game of ${res["type"]}",
+                        style: const TextStyle(fontSize: 17),
+                      ),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+
+                                readDataFromLocalStorage("userId")
+                                    .then((data) {});
+                                socket.sink.add(jsonEncode({
+                                  "action": "joinGame",
+                                  "player1": res["userId"],
+                                  "player2": userId,
+                                  "isPlayer": "True",
+                                }));
+                              },
+                              child: const Text("Accept"))
+                        ],
+                      )
+                    ],
+                  )
+                ],
               ));
+
+      saveDataToLocalStorage("userChallenge", "");
+    });
+
+    readDataFromLocalStorage("userGame").then((data) {
+      if (data == null || data == "") {
+        return null;
+      }
+      Map<String, dynamic> gameInfo = jsonDecode(data);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ChessGame(oppName: gameInfo["oppName"], oppEmail: gameInfo["oppEmail"], isWhite: gameInfo["isWhite"],)),
+      );
+
+      saveDataToLocalStorage("userGame", "");
     });
 
     return Scaffold(
@@ -152,7 +203,7 @@ class _PageRenderState extends State<PageRender> {
                 ? HomePage(userId: userId, socketChannel: socket)
                 : pageSelected == 1
                     ? Userpage(socketChannel: socket, userId: userId!)
-                    : const ChessGame()
+                    : const Placeholder()
             : const Center(
                 child: SizedBox(child: CircularProgressIndicator.adaptive())));
   }

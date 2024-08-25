@@ -6,7 +6,10 @@ import 'package:nearmessageapp/services/chess/helper_methods.dart';
 import 'package:nearmessageapp/values/chess/colors.dart';
 
 class ChessGame extends StatefulWidget {
-  const ChessGame({super.key});
+  const ChessGame({super.key, required this.oppName, required this.isWhite, required this.oppEmail});
+  final String oppName;
+  final String oppEmail;
+  final bool isWhite;
 
   @override
   State<ChessGame> createState() => _ChessGameState();

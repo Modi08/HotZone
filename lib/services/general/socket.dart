@@ -17,17 +17,17 @@ WebSocketChannel connectToWebsocket(paramsApiUrl) {
   return socket;
 }
 
-void listendMsg(WebSocketChannel socket) {
+void listendMsg(WebSocketChannel socket, Function refreshPage) {
   socket.stream.listen((data) {
     Map<String, dynamic> res = jsonDecode(data)["data"];
-    processMsg(res["statusCode"], res, socket);
+    processMsg(res["statusCode"], res, socket, refreshPage);
   }).onDone(() {
     socket.sink.close();
   });
 }
 
 void processMsg(
-    int statusCode, Map<String, dynamic> data, WebSocketChannel socket) {
+    int statusCode, Map<String, dynamic> data, WebSocketChannel socket, Function refreshPage) {
   print(statusCode);
   switch (statusCode) {
     case 100: // Empty Message
@@ -57,6 +57,11 @@ void processMsg(
         saveDataToLocalStorage("userList", "[0]");
       }
     case 204:
-      saveDataToLocalStorage("userChallenge", data["body"]);
+      saveDataToLocalStorage("userChallenge", jsonEncode(data["body"]));
+      refreshPage();
+      
+    case 205:
+      saveDataToLocalStorage("userGame", jsonEncode(data["body"]));
+      refreshPage();
   }
 }
