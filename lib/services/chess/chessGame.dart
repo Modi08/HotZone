@@ -6,9 +6,8 @@ import 'package:nearmessageapp/services/chess/helper_methods.dart';
 import 'package:nearmessageapp/values/chess/colors.dart';
 
 class ChessGame extends StatefulWidget {
-  const ChessGame({super.key, required this.oppName, required this.isWhite, required this.oppEmail});
+  const ChessGame({super.key, required this.oppName, required this.isWhite});
   final String oppName;
-  final String oppEmail;
   final bool isWhite;
 
   @override
@@ -31,13 +30,18 @@ class _ChessGameState extends State<ChessGame> {
   bool isWhiteTurn = true;
 
   List<int> whiteKingPos = [7, 4];
-  List<int> blackKingPos = [0, 4];
+  List<int> blackKingPos = [0, 4]; 
+
+
   bool checkStatus = false;
 
   @override
   void initState() {
     super.initState();
     initializeBoard();
+
+    blackKingPos = widget.isWhite ? [7, 4] : [0,4];
+    blackKingPos = widget.isWhite ? [0, 4] : [7,4];
   }
 
   void initializeBoard() {
@@ -45,35 +49,50 @@ class _ChessGameState extends State<ChessGame> {
         List.generate(8, (index) => List.generate(8, (index) => null));
 
     for (int i = 0; i < 8; i++) {
-      newBoard[1][i] = ChessPiece(type: ChessPieceType.pawn, isWhite: false);
-      newBoard[6][i] = ChessPiece(type: ChessPieceType.pawn, isWhite: true);
+      newBoard[1][i] =
+          ChessPiece(type: ChessPieceType.pawn, isWhite: !widget.isWhite);
+      newBoard[6][i] =
+          ChessPiece(type: ChessPieceType.pawn, isWhite: widget.isWhite);
     }
 
     for (int i in [0, 7]) {
-      newBoard[0][i] = ChessPiece(type: ChessPieceType.rook, isWhite: false);
-      newBoard[7][i] = ChessPiece(type: ChessPieceType.rook, isWhite: true);
+      newBoard[0][i] =
+          ChessPiece(type: ChessPieceType.rook, isWhite: !widget.isWhite);
+      newBoard[7][i] =
+          ChessPiece(type: ChessPieceType.rook, isWhite: widget.isWhite);
     }
 
     for (int i in [1, 6]) {
-      newBoard[0][i] = ChessPiece(type: ChessPieceType.knight, isWhite: false);
-      newBoard[7][i] = ChessPiece(type: ChessPieceType.knight, isWhite: true);
+      newBoard[0][i] =
+          ChessPiece(type: ChessPieceType.knight, isWhite: !widget.isWhite);
+      newBoard[7][i] =
+          ChessPiece(type: ChessPieceType.knight, isWhite: widget.isWhite);
     }
 
     for (int i in [2, 5]) {
-      newBoard[0][i] = ChessPiece(type: ChessPieceType.bishop, isWhite: false);
-      newBoard[7][i] = ChessPiece(type: ChessPieceType.bishop, isWhite: true);
+      newBoard[0][i] =
+          ChessPiece(type: ChessPieceType.bishop, isWhite: !widget.isWhite);
+      newBoard[7][i] =
+          ChessPiece(type: ChessPieceType.bishop, isWhite: widget.isWhite);
     }
 
-    newBoard[0][3] = ChessPiece(type: ChessPieceType.queen, isWhite: false);
-    newBoard[7][3] = ChessPiece(type: ChessPieceType.queen, isWhite: true);
+    newBoard[0][3] =
+        ChessPiece(type: ChessPieceType.queen, isWhite: !widget.isWhite);
+    newBoard[7][3] =
+        ChessPiece(type: ChessPieceType.queen, isWhite: widget.isWhite);
 
-    newBoard[0][4] = ChessPiece(type: ChessPieceType.king, isWhite: false);
-    newBoard[7][4] = ChessPiece(type: ChessPieceType.king, isWhite: true);
+    newBoard[0][4] =
+        ChessPiece(type: ChessPieceType.king, isWhite: !widget.isWhite);
+    newBoard[7][4] =
+        ChessPiece(type: ChessPieceType.king, isWhite: widget.isWhite);
 
     board = newBoard;
   }
 
   void pieceSelected(int row, int col) {
+    /*if (board[row][col] != null && board[row][col]!.isWhite == widget.isWhite) {
+      return;
+    }*/
     setState(() {
       if (board[row][col] != null && (selectedPiece == null)) {
         if (board[row][col]!.isWhite == isWhiteTurn) {
@@ -111,7 +130,13 @@ class _ChessGameState extends State<ChessGame> {
   List<List<int>> calulateRawValidMoves(int row, int col, ChessPiece piece) {
     List<List<int>> candiateMoves = [];
 
-    int direction = piece.isWhite ? -1 : 1;
+    int direction = widget.isWhite
+        ? piece.isWhite
+            ? -1
+            : 1
+        : !piece.isWhite
+            ? -1
+            : 1;
 
     switch (piece.type) {
       case ChessPieceType.pawn:
@@ -119,14 +144,21 @@ class _ChessGameState extends State<ChessGame> {
             board[row + direction][col] == null) {
           candiateMoves.add([row + direction, col]);
         }
-
-        if ((piece.isWhite && row == 6) || (!piece.isWhite && row == 1)) {
-          if (board[row + direction * 2][col] == null &&
-              board[row + direction][col] == null) {
-            candiateMoves.add([row + direction * 2, col]);
+        if (widget.isWhite) {
+          if ((piece.isWhite && row == 6) || (!piece.isWhite && row == 1)) {
+            if (board[row + direction * 2][col] == null &&
+                board[row + direction][col] == null) {
+              candiateMoves.add([row + direction * 2, col]);
+            }
+          }
+        } else {
+          if ((!piece.isWhite && row == 6) || (piece.isWhite && row == 1)) {
+            if (board[row + direction * 2][col] == null &&
+                board[row + direction][col] == null) {
+              candiateMoves.add([row + direction * 2, col]);
+            }
           }
         }
-
         if (isInBoard(row + direction, col + 1) &&
             board[row + direction][col + 1] != null &&
             board[row + direction][col + 1]!.isWhite != piece.isWhite) {
@@ -453,8 +485,8 @@ class _ChessGameState extends State<ChessGame> {
       isWhiteTurn = true;
       checkStatus = false;
 
-      whiteKingPos = [7, 4];
-      blackKingPos = [0, 4];
+      whiteKingPos = widget.isWhite ? [7, 4] : [0, 4];
+      blackKingPos = widget.isWhite ? [0, 4] : [7, 4];
     });
   }
 
@@ -488,6 +520,15 @@ class _ChessGameState extends State<ChessGame> {
                   itemBuilder: (context, index) => DeadPiece(
                       imagePath: whitePiecesTaken[index].imagePath,
                       isWhite: true))),
+          widget.isWhite
+              ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Icon(Icons.circle, size: 17, color: Colors.yellow[700]),
+                  const SizedBox(width: 5),
+                  const Icon(Icons.circle, size: 35),
+                  const SizedBox(width: 10),
+                  Text(widget.oppName)
+                ])
+              : const SizedBox(),
           Text(
             checkStatus ? "CHECK!!" : "",
             style: const TextStyle(
@@ -519,11 +560,21 @@ class _ChessGameState extends State<ChessGame> {
                   isSelected: isSelected,
                   onTap: () => pieceSelected(row, col),
                   isValidMove: isValidMove,
+                  isInverted: !widget.isWhite,
                 );
               },
               itemCount: 64,
             ),
           ),
+          !widget.isWhite
+              ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Icon(Icons.circle, size: 17, color: Colors.yellow[700]),
+                  const SizedBox(width: 5),
+                  const Icon(Icons.circle, size: 35),
+                  const SizedBox(width: 10),
+                  Text(widget.oppName)
+                ])
+              : const SizedBox(),
           Expanded(
               child: GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),

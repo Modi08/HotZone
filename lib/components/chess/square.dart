@@ -9,6 +9,7 @@ class Square extends StatelessWidget {
   final bool isSelected;
   final void Function()? onTap;
   final bool isValidMove;
+  final bool isInverted;
 
   const Square(
       {super.key,
@@ -17,7 +18,7 @@ class Square extends StatelessWidget {
       required this.isSelected,
       required this.onTap,
       required this.isValidMove,
-      });
+      required this.isInverted});
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +29,17 @@ class Square extends StatelessWidget {
     } else if (isValidMove) {
       squareColor = Colors.green;
     } else {
-      squareColor = isWhite ? foregroundColor : backgroundColor;
+      if (isInverted) {
+        squareColor = isWhite ? backgroundColor : foregroundColor;
+      } else {
+        squareColor = isWhite ? foregroundColor : backgroundColor;
+      }
     }
 
     return GestureDetector(
-      onTap: onTap,
+        onTap: onTap,
         child: Container(
-          margin: EdgeInsets.all(isValidMove ? 8 : 0),
+            margin: EdgeInsets.all(isValidMove ? 8 : 0),
             color: squareColor,
             child: piece != null
                 ? SvgPicture.asset(

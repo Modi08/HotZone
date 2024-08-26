@@ -127,7 +127,7 @@ class _PageRenderState extends State<PageRender> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ChessGame(oppName: gameInfo["oppName"], oppEmail: gameInfo["oppEmail"], isWhite: gameInfo["isWhite"],)),
+        MaterialPageRoute(builder: (context) => ChessGame(oppName: gameInfo["oppName"], isWhite: gameInfo["isWhite"])),
       );
 
       saveDataToLocalStorage("userGame", "");
@@ -203,7 +203,7 @@ class _PageRenderState extends State<PageRender> {
                 ? HomePage(userId: userId, socketChannel: socket)
                 : pageSelected == 1
                     ? Userpage(socketChannel: socket, userId: userId!)
-                    : const Placeholder()
+                    : const ChessGame(oppName: "Ekansh", isWhite: false)
             : const Center(
                 child: SizedBox(child: CircularProgressIndicator.adaptive())));
   }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:nearmessageapp/services/chess/chessGame.dart';
 import 'package:nearmessageapp/services/general/localstorage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:crypto/crypto.dart';
