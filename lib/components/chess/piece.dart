@@ -3,10 +3,12 @@ enum ChessPieceType { pawn, rook, knight, bishop, queen, king }
 class ChessPiece {
   final ChessPieceType type;
   final bool isWhite;
+  final List<int>? lastSquare;
   
   ChessPiece({
     required this.type,
     required this.isWhite,
+    required this.lastSquare
   });
 
   String get imagePath {

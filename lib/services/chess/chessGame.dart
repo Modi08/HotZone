@@ -1,14 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/chess/deadpiece.dart';
 import 'package:nearmessageapp/components/chess/piece.dart';
 import 'package:nearmessageapp/components/chess/square.dart';
 import 'package:nearmessageapp/services/chess/helper_methods.dart';
+import 'package:nearmessageapp/services/general/localstorage.dart';
 import 'package:nearmessageapp/values/chess/colors.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChessGame extends StatefulWidget {
-  const ChessGame({super.key, required this.oppName, required this.isWhite});
+  const ChessGame(
+      {super.key,
+      required this.oppName,
+      required this.isWhite,
+      required this.socketChannel,
+      required this.gameId});
   final String oppName;
   final bool isWhite;
+  final WebSocketChannel socketChannel;
+  final String gameId;
 
   @override
   State<ChessGame> createState() => _ChessGameState();
@@ -30,8 +41,7 @@ class _ChessGameState extends State<ChessGame> {
   bool isWhiteTurn = true;
 
   List<int> whiteKingPos = [7, 4];
-  List<int> blackKingPos = [0, 4]; 
-
+  List<int> blackKingPos = [0, 4];
 
   bool checkStatus = false;
 
@@ -40,8 +50,10 @@ class _ChessGameState extends State<ChessGame> {
     super.initState();
     initializeBoard();
 
-    blackKingPos = widget.isWhite ? [7, 4] : [0,4];
-    blackKingPos = widget.isWhite ? [0, 4] : [7,4];
+    blackKingPos = widget.isWhite ? [7, 4] : [0, 4];
+    blackKingPos = widget.isWhite ? [0, 4] : [7, 4];
+
+    saveDataToLocalStorage("move", "");
   }
 
   void initializeBoard() {
@@ -50,41 +62,41 @@ class _ChessGameState extends State<ChessGame> {
 
     for (int i = 0; i < 8; i++) {
       newBoard[1][i] =
-          ChessPiece(type: ChessPieceType.pawn, isWhite: !widget.isWhite);
+          ChessPiece(type: ChessPieceType.pawn, isWhite: !widget.isWhite, lastSquare: [1, i]);
       newBoard[6][i] =
-          ChessPiece(type: ChessPieceType.pawn, isWhite: widget.isWhite);
+          ChessPiece(type: ChessPieceType.pawn, isWhite: widget.isWhite, lastSquare: [6, i]);
     }
 
     for (int i in [0, 7]) {
       newBoard[0][i] =
-          ChessPiece(type: ChessPieceType.rook, isWhite: !widget.isWhite);
+          ChessPiece(type: ChessPieceType.rook, isWhite: !widget.isWhite, lastSquare: [0, i]);
       newBoard[7][i] =
-          ChessPiece(type: ChessPieceType.rook, isWhite: widget.isWhite);
+          ChessPiece(type: ChessPieceType.rook, isWhite: widget.isWhite, lastSquare: [7, i]);
     }
 
     for (int i in [1, 6]) {
       newBoard[0][i] =
-          ChessPiece(type: ChessPieceType.knight, isWhite: !widget.isWhite);
+          ChessPiece(type: ChessPieceType.knight, isWhite: !widget.isWhite, lastSquare: [0, i]);
       newBoard[7][i] =
-          ChessPiece(type: ChessPieceType.knight, isWhite: widget.isWhite);
+          ChessPiece(type: ChessPieceType.knight, isWhite: widget.isWhite, lastSquare: [7, i]);
     }
 
     for (int i in [2, 5]) {
       newBoard[0][i] =
-          ChessPiece(type: ChessPieceType.bishop, isWhite: !widget.isWhite);
+          ChessPiece(type: ChessPieceType.bishop, isWhite: !widget.isWhite, lastSquare: [0, i]);
       newBoard[7][i] =
-          ChessPiece(type: ChessPieceType.bishop, isWhite: widget.isWhite);
+          ChessPiece(type: ChessPieceType.bishop, isWhite: widget.isWhite, lastSquare: [7, i]);
     }
 
     newBoard[0][3] =
-        ChessPiece(type: ChessPieceType.queen, isWhite: !widget.isWhite);
+        ChessPiece(type: ChessPieceType.queen, isWhite: !widget.isWhite, lastSquare: [0, 3]);
     newBoard[7][3] =
-        ChessPiece(type: ChessPieceType.queen, isWhite: widget.isWhite);
+        ChessPiece(type: ChessPieceType.queen, isWhite: widget.isWhite, lastSquare: [7, 3]);
 
     newBoard[0][4] =
-        ChessPiece(type: ChessPieceType.king, isWhite: !widget.isWhite);
+        ChessPiece(type: ChessPieceType.king, isWhite: !widget.isWhite, lastSquare: [0, 4]);
     newBoard[7][4] =
-        ChessPiece(type: ChessPieceType.king, isWhite: widget.isWhite);
+        ChessPiece(type: ChessPieceType.king, isWhite: widget.isWhite, lastSquare: [7, 4]);
 
     board = newBoard;
   }
@@ -114,8 +126,8 @@ class _ChessGameState extends State<ChessGame> {
             blackKingPos = [row, col];
           }
         }
-
-        movePiece(row, col);
+        selectedPiece;
+        movePiece(row, col, selectedPiece!);
       }
 
       if (selectedPiece != null) {
@@ -343,7 +355,10 @@ class _ChessGameState extends State<ChessGame> {
     return realValidMoves;
   }
 
-  void movePiece(int newRow, int newCol) {
+  void movePiece(int newRow, int newCol, ChessPiece piece) {
+    //print("$newRow, $newCol");
+    //print(piece.lastSquare);
+
     if (board[newRow][newCol] != null) {
       if (board[newRow][newCol]!.isWhite) {
         whitePiecesTaken.add(board[newRow][newCol]!);
@@ -387,6 +402,7 @@ class _ChessGameState extends State<ChessGame> {
     }
 
     isWhiteTurn = !isWhiteTurn;
+    widget.socketChannel.sink.add(jsonEncode({"action": "playMove", "currentPos": piece.lastSquare, "nextPos": [newRow, newCol], "gameId": widget.gameId, "isWhite": widget.isWhite}));
   }
 
   bool isKingInCheck(bool isWhiteKing) {
@@ -492,6 +508,9 @@ class _ChessGameState extends State<ChessGame> {
 
   @override
   Widget build(BuildContext context) {
+    readDataFromLocalStorage("move").then((value) {
+     print(value); 
+    });
     return Scaffold(
         backgroundColor: backgroundColor,
         body: Column(children: [

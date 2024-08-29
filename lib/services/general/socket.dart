@@ -40,6 +40,7 @@ void processMsg(
       saveDataToLocalStorage("messages", data["msgs"]);
 
       break;
+    
     case 202: // New message recieved
       var messages = readDataFromLocalStorage("messages");
       Map<String, dynamic> newMessage = data["msg"];
@@ -49,6 +50,7 @@ void processMsg(
         saveDataToLocalStorage("messages", jsonEncode(messages));
       });
       break;
+    
     case 203: // User List recived
       if (data["userList"] != "[]") {
         var message = jsonDecode(data["userList"])[0];
@@ -56,12 +58,18 @@ void processMsg(
       } else {
         saveDataToLocalStorage("userList", "[0]");
       }
-    case 204:
+    
+    case 204: // User recived a challenge
       saveDataToLocalStorage("userChallenge", jsonEncode(data["body"]));
       refreshPage();
       
-    case 205:
+    case 205: // User Has to play a game
       saveDataToLocalStorage("userGame", jsonEncode(data["body"]));
       refreshPage();
+
+    case 206:
+      saveDataToLocalStorage("move", data["body"]);
+      refreshPage();
+      break;
   }
 }
