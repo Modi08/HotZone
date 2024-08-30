@@ -124,7 +124,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   void pieceSelected(int row, int col) {
-    if (board[row][col] != null && board[row][col]!.isWhite == widget.isWhite) {
+    if (board[row][col] != null && board[row][col]!.isWhite != widget.isWhite) {
       return;
     }
     setState(() {
