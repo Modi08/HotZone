@@ -61,50 +61,72 @@ class _ChessGameState extends State<ChessGame> {
         List.generate(8, (index) => List.generate(8, (index) => null));
 
     for (int i = 0; i < 8; i++) {
-      newBoard[1][i] =
-          ChessPiece(type: ChessPieceType.pawn, isWhite: !widget.isWhite, lastSquare: [1, i]);
-      newBoard[6][i] =
-          ChessPiece(type: ChessPieceType.pawn, isWhite: widget.isWhite, lastSquare: [6, i]);
+      newBoard[1][i] = ChessPiece(
+          type: ChessPieceType.pawn,
+          isWhite: !widget.isWhite,
+          lastSquare: [1, i]);
+      newBoard[6][i] = ChessPiece(
+          type: ChessPieceType.pawn,
+          isWhite: widget.isWhite,
+          lastSquare: [6, i]);
     }
 
     for (int i in [0, 7]) {
-      newBoard[0][i] =
-          ChessPiece(type: ChessPieceType.rook, isWhite: !widget.isWhite, lastSquare: [0, i]);
-      newBoard[7][i] =
-          ChessPiece(type: ChessPieceType.rook, isWhite: widget.isWhite, lastSquare: [7, i]);
+      newBoard[0][i] = ChessPiece(
+          type: ChessPieceType.rook,
+          isWhite: !widget.isWhite,
+          lastSquare: [0, i]);
+      newBoard[7][i] = ChessPiece(
+          type: ChessPieceType.rook,
+          isWhite: widget.isWhite,
+          lastSquare: [7, i]);
     }
 
     for (int i in [1, 6]) {
-      newBoard[0][i] =
-          ChessPiece(type: ChessPieceType.knight, isWhite: !widget.isWhite, lastSquare: [0, i]);
-      newBoard[7][i] =
-          ChessPiece(type: ChessPieceType.knight, isWhite: widget.isWhite, lastSquare: [7, i]);
+      newBoard[0][i] = ChessPiece(
+          type: ChessPieceType.knight,
+          isWhite: !widget.isWhite,
+          lastSquare: [0, i]);
+      newBoard[7][i] = ChessPiece(
+          type: ChessPieceType.knight,
+          isWhite: widget.isWhite,
+          lastSquare: [7, i]);
     }
 
     for (int i in [2, 5]) {
-      newBoard[0][i] =
-          ChessPiece(type: ChessPieceType.bishop, isWhite: !widget.isWhite, lastSquare: [0, i]);
-      newBoard[7][i] =
-          ChessPiece(type: ChessPieceType.bishop, isWhite: widget.isWhite, lastSquare: [7, i]);
+      newBoard[0][i] = ChessPiece(
+          type: ChessPieceType.bishop,
+          isWhite: !widget.isWhite,
+          lastSquare: [0, i]);
+      newBoard[7][i] = ChessPiece(
+          type: ChessPieceType.bishop,
+          isWhite: widget.isWhite,
+          lastSquare: [7, i]);
     }
 
-    newBoard[0][3] =
-        ChessPiece(type: ChessPieceType.queen, isWhite: !widget.isWhite, lastSquare: [0, 3]);
-    newBoard[7][3] =
-        ChessPiece(type: ChessPieceType.queen, isWhite: widget.isWhite, lastSquare: [7, 3]);
+    newBoard[0][3] = ChessPiece(
+        type: ChessPieceType.queen,
+        isWhite: !widget.isWhite,
+        lastSquare: [0, 3]);
+    newBoard[7][3] = ChessPiece(
+        type: ChessPieceType.queen,
+        isWhite: widget.isWhite,
+        lastSquare: [7, 3]);
 
-    newBoard[0][4] =
-        ChessPiece(type: ChessPieceType.king, isWhite: !widget.isWhite, lastSquare: [0, 4]);
-    newBoard[7][4] =
-        ChessPiece(type: ChessPieceType.king, isWhite: widget.isWhite, lastSquare: [7, 4]);
+    newBoard[0][4] = ChessPiece(
+        type: ChessPieceType.king,
+        isWhite: !widget.isWhite,
+        lastSquare: [0, 4]);
+    newBoard[7][4] = ChessPiece(
+        type: ChessPieceType.king, isWhite: widget.isWhite, lastSquare: [7, 4]);
 
     board = newBoard;
   }
 
   void pieceSelected(int row, int col) {
-    /*if (board[row][col] != null && board[row][col]!.isWhite == widget.isWhite) {
+    if (board[row][col] != null && board[row][col]!.isWhite == widget.isWhite) {
       return;
-    }*/
+    }
     setState(() {
       if (board[row][col] != null && (selectedPiece == null)) {
         if (board[row][col]!.isWhite == isWhiteTurn) {
@@ -355,9 +377,8 @@ class _ChessGameState extends State<ChessGame> {
     return realValidMoves;
   }
 
-  void movePiece(int newRow, int newCol, ChessPiece piece) {
-    //print("$newRow, $newCol");
-    //print(piece.lastSquare);
+  void movePiece(int newRow, int newCol, ChessPiece? piece) {
+    print("$selectedRow, $selectedCol, $selectedPiece, $validMoves");
 
     if (board[newRow][newCol] != null) {
       if (board[newRow][newCol]!.isWhite) {
@@ -402,7 +423,17 @@ class _ChessGameState extends State<ChessGame> {
     }
 
     isWhiteTurn = !isWhiteTurn;
-    widget.socketChannel.sink.add(jsonEncode({"action": "playMove", "currentPos": piece.lastSquare, "nextPos": [newRow, newCol], "gameId": widget.gameId, "isWhite": widget.isWhite}));
+
+    if (piece != null) {
+      widget.socketChannel.sink.add(jsonEncode({
+        "action": "playMove",
+        "currentPos": piece.lastSquare,
+        "nextPos": [newRow, newCol],
+        "gameId": widget.gameId,
+        "isWhite": widget.isWhite
+      }));
+      piece.lastSquare = [newRow, newCol];
+    }
   }
 
   bool isKingInCheck(bool isWhiteKing) {
@@ -506,11 +537,32 @@ class _ChessGameState extends State<ChessGame> {
     });
   }
 
+  int reverseNumber(int number) {
+    return 7 - number;
+  }
+
   @override
   Widget build(BuildContext context) {
     readDataFromLocalStorage("move").then((value) {
-     print(value); 
+      if (value != "") {
+        print(value);
+        var currentPos = jsonDecode(value!)["currentPos"];
+        var nextPos = jsonDecode(value)["nextPos"];
+
+        selectedPiece = board[reverseNumber(currentPos[0])][currentPos[1]]!;
+        selectedRow = reverseNumber(currentPos[0]);
+        selectedCol = currentPos[1];
+
+        movePiece(reverseNumber(nextPos[0]), nextPos[1], null);
+
+        saveDataToLocalStorage("move", "");
+      }
+
+      setState(() {
+        whitePiecesTaken = whitePiecesTaken;
+      });
     });
+
     return Scaffold(
         backgroundColor: backgroundColor,
         body: Column(children: [

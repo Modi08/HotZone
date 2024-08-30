@@ -3,7 +3,7 @@ enum ChessPieceType { pawn, rook, knight, bishop, queen, king }
 class ChessPiece {
   final ChessPieceType type;
   final bool isWhite;
-  final List<int>? lastSquare;
+  List<int>? lastSquare;
   
   ChessPiece({
     required this.type,
