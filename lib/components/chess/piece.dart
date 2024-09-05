@@ -4,11 +4,13 @@ class ChessPiece {
   final ChessPieceType type;
   final bool isWhite;
   List<int>? lastSquare;
+  bool? hasMoved;
   
   ChessPiece({
     required this.type,
     required this.isWhite,
-    required this.lastSquare
+    required this.lastSquare,
+    this.hasMoved,
   });
 
   String get imagePath {

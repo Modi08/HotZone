@@ -75,11 +75,13 @@ class _ChessGameState extends State<ChessGame> {
       newBoard[0][i] = ChessPiece(
           type: ChessPieceType.rook,
           isWhite: !widget.isWhite,
-          lastSquare: [0, i]);
+          lastSquare: [0, i],
+          hasMoved: false);
       newBoard[7][i] = ChessPiece(
           type: ChessPieceType.rook,
           isWhite: widget.isWhite,
-          lastSquare: [7, i]);
+          lastSquare: [7, i],
+          hasMoved: false);
     }
 
     for (int i in [1, 6]) {
@@ -116,17 +118,21 @@ class _ChessGameState extends State<ChessGame> {
     newBoard[0][4] = ChessPiece(
         type: ChessPieceType.king,
         isWhite: !widget.isWhite,
-        lastSquare: [0, 4]);
+        lastSquare: [0, 4],
+        hasMoved: false);
     newBoard[7][4] = ChessPiece(
-        type: ChessPieceType.king, isWhite: widget.isWhite, lastSquare: [7, 4]);
+        type: ChessPieceType.king,
+        isWhite: widget.isWhite,
+        lastSquare: [7, 4],
+        hasMoved: false);
 
     board = newBoard;
   }
 
   void pieceSelected(int row, int col) {
-    if (board[row][col] != null && board[row][col]!.isWhite != widget.isWhite) {
+    /* if (board[row][col] != null && board[row][col]!.isWhite != widget.isWhite) {
       return;
-    }
+    }*/
     setState(() {
       if (board[row][col] != null && (selectedPiece == null)) {
         if (board[row][col]!.isWhite == isWhiteTurn) {
@@ -142,14 +148,17 @@ class _ChessGameState extends State<ChessGame> {
       } else if (selectedPiece != null &&
           validMoves.any((element) => element[0] == row && element[1] == col)) {
         if (selectedPiece!.type == ChessPieceType.king) {
+          selectedPiece!.hasMoved = true;
+
           if (selectedPiece!.isWhite) {
             whiteKingPos = [row, col];
           } else {
             blackKingPos = [row, col];
           }
+        } else if (selectedPiece!.type == ChessPieceType.rook) {
+          selectedPiece!.hasMoved;
         }
-        selectedPiece;
-        movePiece(row, col, selectedPiece!);
+        movePiece(row, col, null);
       }
 
       if (selectedPiece != null) {
@@ -178,6 +187,7 @@ class _ChessGameState extends State<ChessGame> {
             board[row + direction][col] == null) {
           candiateMoves.add([row + direction, col]);
         }
+
         if (widget.isWhite) {
           if ((piece.isWhite && row == 6) || (!piece.isWhite && row == 1)) {
             if (board[row + direction * 2][col] == null &&
@@ -193,6 +203,7 @@ class _ChessGameState extends State<ChessGame> {
             }
           }
         }
+
         if (isInBoard(row + direction, col + 1) &&
             board[row + direction][col + 1] != null &&
             board[row + direction][col + 1]!.isWhite != piece.isWhite) {
@@ -339,15 +350,48 @@ class _ChessGameState extends State<ChessGame> {
           var newCol = col + direction[1];
 
           if (!isInBoard(newRow, newCol)) {
-            break;
+            continue;
           } else if (board[newRow][newCol] != null &&
               board[newRow][newCol]!.isWhite != piece.isWhite) {
             candiateMoves.add([newRow, newCol]);
-            break;
           } else if (board[newRow][newCol] == null) {
             candiateMoves.add([newRow, newCol]);
           } else {
-            break;
+            continue;
+          }
+        }
+
+        var run = true;
+        print("hello");
+        if (!piece.hasMoved! &&
+            board[row][7] != null &&
+            !board[row][7]!.hasMoved!) {
+          for (int i = 5; i < 7; i++) {
+            print("${board[row][i]?.type} ${board[row][i]} $i");
+            if (board[row][i] != null) {
+              run = false;
+              break;
+            }
+          }
+          if (run) {
+            candiateMoves.add([row, 6]);
+          }
+        }
+
+        run = true;
+        if (!piece.hasMoved! &&
+            board[row][0] != null &&
+            !board[row][0]!.hasMoved!) {
+          for (int i = 3; i > 0; i--) {
+            print("${board[row][i]?.type} ${board[row][i]} $i");
+            if (board[row][i] != null) {
+              run = false;
+              break;
+            }
+          }
+
+          if (run) {
+            candiateMoves.add([row, 2]);
           }
         }
 
@@ -366,7 +410,24 @@ class _ChessGameState extends State<ChessGame> {
       for (var move in candiateMoves) {
         int endRow = move[0];
         int endCol = move[1];
-        if (simulatedMoveIsSafe(piece, row, col, endRow, endCol)) {
+
+        if (piece.type == ChessPieceType.king &&
+            !piece.hasMoved! &&
+            (endRow == 7 && (endCol == 6 || endCol == 2) ||
+                (endRow == 0 && (endCol == 6 || endCol == 2)))) {
+          if (endCol == 6) {
+            if (simulatedMoveIsSafe(piece, row, col, endRow, 5) &&
+                simulatedMoveIsSafe(piece, row, col, endRow, 6)) {
+              realValidMoves.add(move);
+            } else {
+              if (simulatedMoveIsSafe(piece, row, col, endRow, 3) &&
+                  simulatedMoveIsSafe(piece, row, col, endRow, 2) &&
+                  simulatedMoveIsSafe(piece, row, col, endRow, 1)) {
+                realValidMoves.add(move);
+              }
+            }
+          }
+        } else if (simulatedMoveIsSafe(piece, row, col, endRow, endCol)) {
           realValidMoves.add(move);
         }
       }

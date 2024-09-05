@@ -208,13 +208,12 @@ class _PageRenderState extends State<PageRender> {
                 ? HomePage(userId: userId, socketChannel: socket)
                 : pageSelected == 1
                     ? Userpage(socketChannel: socket, userId: userId!)
-                    : const Placeholder()
-                    /* ChessGame(
+                    : ChessGame(
                         oppName: "Ekansh",
                         isWhite: true,
                         socketChannel: socket,
                         gameId: "123456789098765432123456789",
-                      )*/
+                      )
             : const Center(
                 child: SizedBox(child: CircularProgressIndicator.adaptive())));
   }
