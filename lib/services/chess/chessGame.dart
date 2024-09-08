@@ -130,9 +130,9 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   void pieceSelected(int row, int col) {
-    /* if (board[row][col] != null && board[row][col]!.isWhite != widget.isWhite) {
+    if (board[row][col] != null && board[row][col]!.isWhite != widget.isWhite) {
       return;
-    }*/
+    }
     setState(() {
       if (board[row][col] != null && (selectedPiece == null)) {
         if (board[row][col]!.isWhite == isWhiteTurn) {
@@ -158,7 +158,7 @@ class _ChessGameState extends State<ChessGame> {
         } else if (selectedPiece!.type == ChessPieceType.rook) {
           selectedPiece!.hasMoved;
         }
-        movePiece(row, col, null);
+        movePiece(row, col, selectedPiece);
       }
 
       if (selectedPiece != null) {
@@ -362,12 +362,10 @@ class _ChessGameState extends State<ChessGame> {
         }
 
         var run = true;
-        print("hello");
         if (!piece.hasMoved! &&
             board[row][7] != null &&
             !board[row][7]!.hasMoved!) {
           for (int i = 5; i < 7; i++) {
-            print("${board[row][i]?.type} ${board[row][i]} $i");
             if (board[row][i] != null) {
               run = false;
               break;
@@ -383,7 +381,6 @@ class _ChessGameState extends State<ChessGame> {
             board[row][0] != null &&
             !board[row][0]!.hasMoved!) {
           for (int i = 3; i > 0; i--) {
-            print("${board[row][i]?.type} ${board[row][i]} $i");
             if (board[row][i] != null) {
               run = false;
               break;
@@ -439,7 +436,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   void movePiece(int newRow, int newCol, ChessPiece? piece) {
-    print("$selectedRow, $selectedCol, $selectedPiece, $validMoves");
+    print("$selectedRow, $selectedCol, $newRow, $newCol");
 
     if (board[newRow][newCol] != null) {
       if (board[newRow][newCol]!.isWhite) {
@@ -484,14 +481,30 @@ class _ChessGameState extends State<ChessGame> {
     }
 
     isWhiteTurn = !isWhiteTurn;
-
     if (piece != null) {
+      String? specialMove = isSpecialMove(piece, newCol);
+      if (specialMove == "C") {
+        if (newCol == 6) {
+            board[reverseNumber(newRow)][newCol] = selectedPiece;
+            board[selectedRow][selectedCol] = null;
+
+            board[reverseNumber(newRow)][5];
+          } else {
+            board[reverseNumber(newRow)][newCol] = selectedPiece;
+            board[selectedRow][selectedCol] = null;
+
+            board[reverseNumber(newRow)][2];
+          }
+      }
+
+
       widget.socketChannel.sink.add(jsonEncode({
         "action": "playMove",
         "currentPos": piece.lastSquare,
         "nextPos": [newRow, newCol],
         "gameId": widget.gameId,
-        "isWhite": widget.isWhite
+        "isWhite": widget.isWhite,
+        "specialMove": isSpecialMove(piece, newCol),
       }));
       piece.lastSquare = [newRow, newCol];
     }
@@ -516,6 +529,13 @@ class _ChessGameState extends State<ChessGame> {
       }
     }
     return false;
+  }
+
+  String? isSpecialMove(ChessPiece piece, int newCol) {
+    if (piece.type == ChessPieceType.king && piece.hasMoved! && newCol == 6) {
+      return "C";
+    }
+    return null;
   }
 
   bool simulatedMoveIsSafe(
@@ -609,12 +629,27 @@ class _ChessGameState extends State<ChessGame> {
         print(value);
         var currentPos = jsonDecode(value!)["currentPos"];
         var nextPos = jsonDecode(value)["nextPos"];
+        String? specialMove = jsonDecode(value)["specialMove"];
 
         selectedPiece = board[reverseNumber(currentPos[0])][currentPos[1]]!;
         selectedRow = reverseNumber(currentPos[0]);
         selectedCol = currentPos[1];
 
-        movePiece(reverseNumber(nextPos[0]), nextPos[1], null);
+        if (specialMove == null) {
+          movePiece(reverseNumber(nextPos[0]), nextPos[1], null);
+        } else if (specialMove == "C") {
+          if (nextPos[1] == 6) {
+            board[reverseNumber(nextPos[0])][nextPos[1]] = selectedPiece;
+            board[selectedRow][selectedCol] = null;
+
+            board[reverseNumber(nextPos[0])][5];
+          } else {
+            board[reverseNumber(nextPos[0])][nextPos[1]] = selectedPiece;
+            board[selectedRow][selectedCol] = null;
+
+            board[reverseNumber(nextPos[0])][2];
+          }
+        }
 
         saveDataToLocalStorage("move", "");
       }
@@ -630,11 +665,11 @@ class _ChessGameState extends State<ChessGame> {
           const SizedBox(height: 30),
           Row(
             children: [
-              IconButton(
+              /*  IconButton(
                   onPressed: () {
                     resetGame(needToClearScreen: false);
                   },
-                  icon: const Icon(Icons.restart_alt_sharp)),
+                  icon: const Icon(Icons.restart_alt_sharp)),*/
               const Spacer(),
               IconButton(
                   onPressed: () {

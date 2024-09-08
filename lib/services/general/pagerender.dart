@@ -124,7 +124,7 @@ class _PageRenderState extends State<PageRender> {
         return null;
       }
       Map<String, dynamic> gameInfo = jsonDecode(data);
-
+      print(gameInfo["gameId"]);
       Navigator.push(
         context,
         MaterialPageRoute(

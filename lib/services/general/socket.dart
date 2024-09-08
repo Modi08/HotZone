@@ -66,7 +66,7 @@ void processMsg(
       saveDataToLocalStorage("userGame", jsonEncode(data["body"]));
       refreshPage();
 
-    case 206:
+    case 206: // New move has come in
       saveDataToLocalStorage("move", jsonEncode(data["body"]));
   }
 }
