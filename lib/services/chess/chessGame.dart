@@ -147,6 +147,7 @@ class _ChessGameState extends State<ChessGame> {
         selectedPiece = board[row][col];
       } else if (selectedPiece != null &&
           validMoves.any((element) => element[0] == row && element[1] == col)) {
+        bool? pieceHasMoved = selectedPiece!.hasMoved;
         if (selectedPiece!.type == ChessPieceType.king) {
           selectedPiece!.hasMoved = true;
 
@@ -158,7 +159,7 @@ class _ChessGameState extends State<ChessGame> {
         } else if (selectedPiece!.type == ChessPieceType.rook) {
           selectedPiece!.hasMoved;
         }
-        movePiece(row, col, selectedPiece);
+        movePiece(row, col, selectedPiece, pieceHasMoved);
       }
 
       if (selectedPiece != null) {
@@ -435,8 +436,8 @@ class _ChessGameState extends State<ChessGame> {
     return realValidMoves;
   }
 
-  void movePiece(int newRow, int newCol, ChessPiece? piece) {
-    print("$selectedRow, $selectedCol, $newRow, $newCol");
+  void movePiece(int newRow, int newCol, ChessPiece? piece, bool? hasMoved) {
+    //print("$selectedRow, $selectedCol, $newRow, $newCol");
 
     if (board[newRow][newCol] != null) {
       if (board[newRow][newCol]!.isWhite) {
@@ -482,21 +483,16 @@ class _ChessGameState extends State<ChessGame> {
 
     isWhiteTurn = !isWhiteTurn;
     if (piece != null) {
-      String? specialMove = isSpecialMove(piece, newCol);
+      String? specialMove = isSpecialMove(piece, newCol, hasMoved);
       if (specialMove == "C") {
         if (newCol == 6) {
-            board[reverseNumber(newRow)][newCol] = selectedPiece;
-            board[selectedRow][selectedCol] = null;
-
-            board[reverseNumber(newRow)][5];
-          } else {
-            board[reverseNumber(newRow)][newCol] = selectedPiece;
-            board[selectedRow][selectedCol] = null;
-
-            board[reverseNumber(newRow)][2];
-          }
+          board[newRow][5] = board[newRow][7];
+          board[newRow][7] = null;
+        } else {
+          board[newRow][2] = board[newRow][0];
+          board[newRow][0] = null;
+        }
       }
-
 
       widget.socketChannel.sink.add(jsonEncode({
         "action": "playMove",
@@ -504,7 +500,7 @@ class _ChessGameState extends State<ChessGame> {
         "nextPos": [newRow, newCol],
         "gameId": widget.gameId,
         "isWhite": widget.isWhite,
-        "specialMove": isSpecialMove(piece, newCol),
+        "specialMove": specialMove,
       }));
       piece.lastSquare = [newRow, newCol];
     }
@@ -518,12 +514,13 @@ class _ChessGameState extends State<ChessGame> {
         if (board[i][j] == null || board[i][j]!.isWhite == isWhiteKing) {
           continue;
         }
-
+        
         List<List<int>> pieceValidMoves =
             calulateRawValidMoves(i, j, board[i][j]!);
 
         if (pieceValidMoves
             .any((move) => move[0] == kingPos[0] && move[1] == kingPos[1])) {
+          print("${board[i][j]!.type}, ${kingPos}");
           return true;
         }
       }
@@ -531,8 +528,12 @@ class _ChessGameState extends State<ChessGame> {
     return false;
   }
 
-  String? isSpecialMove(ChessPiece piece, int newCol) {
-    if (piece.type == ChessPieceType.king && piece.hasMoved! && newCol == 6) {
+  String? isSpecialMove(ChessPiece piece, int newCol, bool? hasMoved) {
+    print("${piece.type}, $hasMoved, $newCol");
+
+    if (piece.type == ChessPieceType.king &&
+        hasMoved != null && !hasMoved &&
+        (newCol == 6 || newCol == 2)) {
       return "C";
     }
     return null;
@@ -636,18 +637,22 @@ class _ChessGameState extends State<ChessGame> {
         selectedCol = currentPos[1];
 
         if (specialMove == null) {
-          movePiece(reverseNumber(nextPos[0]), nextPos[1], null);
+          movePiece(reverseNumber(nextPos[0]), nextPos[1], null, null);
         } else if (specialMove == "C") {
           if (nextPos[1] == 6) {
             board[reverseNumber(nextPos[0])][nextPos[1]] = selectedPiece;
             board[selectedRow][selectedCol] = null;
 
-            board[reverseNumber(nextPos[0])][5];
+            board[reverseNumber(nextPos[0])][5] =
+                board[reverseNumber(nextPos[0])][7];
+            board[reverseNumber(nextPos[0])][7] = null;
           } else {
             board[reverseNumber(nextPos[0])][nextPos[1]] = selectedPiece;
             board[selectedRow][selectedCol] = null;
 
-            board[reverseNumber(nextPos[0])][2];
+            board[reverseNumber(nextPos[0])][2] =
+                board[reverseNumber(nextPos[0])][0];
+            board[reverseNumber(nextPos[0])][0] = null;
           }
         }
 
