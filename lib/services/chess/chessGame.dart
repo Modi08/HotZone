@@ -50,7 +50,7 @@ class _ChessGameState extends State<ChessGame> {
     super.initState();
     initializeBoard();
 
-    blackKingPos = widget.isWhite ? [7, 4] : [0, 4];
+    whiteKingPos = widget.isWhite ? [7, 4] : [0, 4];
     blackKingPos = widget.isWhite ? [0, 4] : [7, 4];
 
     saveDataToLocalStorage("move", "");
@@ -450,6 +450,7 @@ class _ChessGameState extends State<ChessGame> {
     board[newRow][newCol] = selectedPiece;
     board[selectedRow][selectedCol] = null;
 
+    print("$whiteKingPos, $blackKingPos");
     if (isKingInCheck(!isWhiteTurn)) {
       checkStatus = true;
     } else {
@@ -507,6 +508,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool isKingInCheck(bool isWhiteKing) {
+    print(isWhiteKing);
     List<int> kingPos = isWhiteKing ? whiteKingPos : blackKingPos;
 
     for (int i = 0; i < 8; i++) {
@@ -514,13 +516,13 @@ class _ChessGameState extends State<ChessGame> {
         if (board[i][j] == null || board[i][j]!.isWhite == isWhiteKing) {
           continue;
         }
-        
+
         List<List<int>> pieceValidMoves =
             calulateRawValidMoves(i, j, board[i][j]!);
 
         if (pieceValidMoves
             .any((move) => move[0] == kingPos[0] && move[1] == kingPos[1])) {
-          print("${board[i][j]!.type}, ${kingPos}");
+          print("${board[i][j]!.type}, $kingPos");
           return true;
         }
       }
@@ -532,7 +534,8 @@ class _ChessGameState extends State<ChessGame> {
     print("${piece.type}, $hasMoved, $newCol");
 
     if (piece.type == ChessPieceType.king &&
-        hasMoved != null && !hasMoved &&
+        hasMoved != null &&
+        !hasMoved &&
         (newCol == 6 || newCol == 2)) {
       return "C";
     }
@@ -654,6 +657,14 @@ class _ChessGameState extends State<ChessGame> {
                 board[reverseNumber(nextPos[0])][0];
             board[reverseNumber(nextPos[0])][0] = null;
           }
+
+          setState(() {
+            selectedRow = -1;
+            selectedCol = -1;
+            selectedPiece = null;
+            validMoves = [];
+          });
+          isWhiteTurn = !isWhiteTurn;
         }
 
         saveDataToLocalStorage("move", "");
