@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:location/location.dart';
 import 'package:nearmessageapp/components/panel.dart';
+import 'package:nearmessageapp/pages/profilepage.dart';
 import 'package:nearmessageapp/services/chess/chessGame.dart';
 import 'package:nearmessageapp/pages/homepage.dart';
 import 'package:nearmessageapp/pages/userpage.dart';
@@ -23,7 +24,7 @@ class PageRender extends StatefulWidget {
 
 class _PageRenderState extends State<PageRender> {
   late WebSocketChannel socket;
-  String? userId = "";
+  String? userId;
   int pageSelected = 0;
 
   void refreshPage() {
@@ -146,6 +147,17 @@ class _PageRenderState extends State<PageRender> {
               children: [
                 Row(
                   children: <Widget>[
+                    userId != null
+                        ? IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          Profilepage(userId: userId!)));
+                            },
+                            icon: const Icon(Icons.upload))
+                        : const SizedBox(),
                     Text(
                       widget.title,
                       style: const TextStyle(

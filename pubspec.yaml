@@ -38,6 +38,8 @@ dependencies:
   flutter_dotenv: ^5.1.0
   web_socket_channel: ^2.0.0
   flutter_svg: ^2.0.10+1
+  image_picker: ^1.1.2
+  aws_s3_upload_lite: ^0.1.4
 
 
 

@@ -28,6 +28,7 @@ void listendMsg(WebSocketChannel socket, Function refreshPage) {
 void processMsg(
     int statusCode, Map<String, dynamic> data, WebSocketChannel socket, Function refreshPage) {
   print(statusCode);
+  print(data);
   switch (statusCode) {
     case 100: // Empty Message
       break;
