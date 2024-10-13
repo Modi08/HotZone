@@ -681,11 +681,6 @@ class _ChessGameState extends State<ChessGame> {
           const SizedBox(height: 30),
           Row(
             children: [
-              /*  IconButton(
-                  onPressed: () {
-                    resetGame(needToClearScreen: false);
-                  },
-                  icon: const Icon(Icons.restart_alt_sharp)),*/
               const Spacer(),
               IconButton(
                   onPressed: () {
@@ -705,7 +700,7 @@ class _ChessGameState extends State<ChessGame> {
                       isWhite: true))),
           widget.isWhite
               ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Icon(Icons.circle, size: 17, color: Colors.yellow[700]),
+                  !isWhiteTurn ? Icon(Icons.circle, size: 17, color: Colors.yellow[700]) : const SizedBox(),
                   const SizedBox(width: 5),
                   const Icon(Icons.circle, size: 35),
                   const SizedBox(width: 10),
@@ -751,7 +746,7 @@ class _ChessGameState extends State<ChessGame> {
           ),
           !widget.isWhite
               ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Icon(Icons.circle, size: 17, color: Colors.yellow[700]),
+                  isWhiteTurn ? Icon(Icons.circle, size: 17, color: Colors.yellow[700]) : const SizedBox(),
                   const SizedBox(width: 5),
                   const Icon(Icons.circle, size: 35),
                   const SizedBox(width: 10),
