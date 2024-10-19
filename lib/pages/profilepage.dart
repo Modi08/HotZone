@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nearmessageapp/services/general/imageUpload.dart';
 import 'package:nearmessageapp/services/general/localstorage.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Profilepage extends StatefulWidget {
   final String userId;
@@ -22,14 +23,15 @@ class _ProfilepageState extends State<Profilepage> {
   String? username;
 
   void selectImage() async {
+    await dotenv.load();
     Uint8List? img = await pickImage(ImageSource.gallery);
     setState(() {
       profilePic = img;
     });
     if (img != null) {
       AwsS3.uploadUint8List(
-        accessKey: "",
-        secretKey: "",
+        accessKey: dotenv.env["accessKey"]!,
+        secretKey: dotenv.env["secretKey"]!,
         file: img,
         bucket: "hotzone-talwar",
         region: "eu-central-1",
