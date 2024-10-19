@@ -11,10 +11,12 @@ class UserTile extends StatefulWidget {
       required this.name,
       required this.email,
       required this.crossAxisCount,
-      required this.socketChannel});
+      required this.socketChannel,
+      required this.profilePic});
   final String name;
   final String email;
   final int crossAxisCount;
+  final String profilePic;
   final WebSocketChannel socketChannel;
 
   @override
@@ -26,6 +28,7 @@ class _UserTileState extends State<UserTile> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.profilePic);
     return DecoratedBox(
       decoration: BoxDecoration(
           color: const Color.fromARGB(255, 178, 227, 249),
@@ -75,7 +78,7 @@ class _UserTileState extends State<UserTile> {
                                         .convert(utf8.encode(widget.email))
                                         .toString(),
                                     "type": "chess",
-                                    "userId" : userId
+                                    "userId": userId
                                   }));
                                 });
                               });
@@ -111,8 +114,12 @@ class _UserTileState extends State<UserTile> {
           ),
         ),
         widget.crossAxisCount == 3
-            ? const Icon(Icons.circle_rounded, size: 50)
-            : const Icon(Icons.circle_rounded, size: 90),
+            ? CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(widget.profilePic),
+              )
+            : CircleAvatar(
+                radius: 50, backgroundImage: NetworkImage(widget.profilePic)),
         const Spacer(),
         Text(widget.name),
         Text(widget.email),
