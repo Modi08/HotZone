@@ -42,7 +42,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (response.statusCode == 200) {
         saveDataToLocalStorage("userId", jsonDecode(response.body)['userId']);
+
         saveDataToLocalStorage("username", usernameController.text);
+
+        saveDataToLocalStorage("profilePic", jsonDecode(response.body)['profilePic']);
 
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const AuthGate()));

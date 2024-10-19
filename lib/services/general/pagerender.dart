@@ -25,6 +25,7 @@ class PageRender extends StatefulWidget {
 class _PageRenderState extends State<PageRender> {
   late WebSocketChannel socket;
   String? userId;
+  String? profilePic;
   int pageSelected = 0;
 
   void refreshPage() {
@@ -57,6 +58,14 @@ class _PageRenderState extends State<PageRender> {
     setState(() {
       pageSelected = pageNum;
     });
+  }
+
+  void pushProfilePage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                Profilepage(userId: userId!, socketChannel: socket)));
   }
 
   @override
@@ -139,6 +148,14 @@ class _PageRenderState extends State<PageRender> {
       saveDataToLocalStorage("userGame", "");
     });
 
+    readDataFromLocalStorage("profilePic").then((data) {
+      if (data != "") {
+        setState(() {
+          profilePic = data;
+        });
+      }
+    });
+
     return Scaffold(
         appBar: AppBar(
             toolbarHeight: 100,
@@ -148,15 +165,24 @@ class _PageRenderState extends State<PageRender> {
                 Row(
                   children: <Widget>[
                     userId != null
-                        ? IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Profilepage(userId: userId!, socketChannel: socket,)));
-                            },
-                            icon: const Icon(Icons.upload))
+                        ? profilePic != null
+                            ? OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                    side: BorderSide.none),
+                                onPressed: () {
+                                  pushProfilePage();
+                                },
+                                child: Stack(children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(profilePic!),
+                                  )
+                                ]))
+                            : IconButton(
+                                onPressed: () {
+                                  pushProfilePage();
+                                },
+                                icon: const Icon(Icons.upload))
                         : const SizedBox(),
                     Text(
                       widget.title,

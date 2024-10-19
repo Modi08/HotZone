@@ -38,7 +38,7 @@ class _ProfilepageState extends State<Profilepage> {
       );
 
       var profilePicURL = "https://hotzone-talwar.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png";
-      saveDataToLocalStorage("profilePicURL", profilePicURL);
+      saveDataToLocalStorage("profilePic", profilePicURL);
 
       widget.socketChannel.sink.add(jsonEncode({
         "action": "saveProfilePic",
