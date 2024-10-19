@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:aws_s3_upload_lite/aws_s3_upload_lite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nearmessageapp/services/general/imageUpload.dart';
 import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Profilepage extends StatefulWidget {
   final String userId;
-  const Profilepage({super.key, required this.userId});
+  final WebSocketChannel socketChannel;
+  const Profilepage({super.key, required this.userId, required this.socketChannel});
 
   @override
   State<Profilepage> createState() => _ProfilepageState();
@@ -32,7 +36,16 @@ class _ProfilepageState extends State<Profilepage> {
         destDir: "profilePics",
         filename: "${widget.userId}.png",
       );
-      saveDataToLocalStorage("profilePicURL", "https://hotzone-talwar.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png");
+
+      var profilePicURL = "https://hotzone-talwar.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png";
+      saveDataToLocalStorage("profilePicURL", profilePicURL);
+
+      widget.socketChannel.sink.add(jsonEncode({
+        "action": "saveProfilePic",
+        "userId": widget.userId,
+        "profilePic": profilePicURL
+      }));
+
     }
   }
 

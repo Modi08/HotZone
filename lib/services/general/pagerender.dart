@@ -154,7 +154,7 @@ class _PageRenderState extends State<PageRender> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          Profilepage(userId: userId!)));
+                                          Profilepage(userId: userId!, socketChannel: socket,)));
                             },
                             icon: const Icon(Icons.upload))
                         : const SizedBox(),
@@ -215,7 +215,7 @@ class _PageRenderState extends State<PageRender> {
                 ),
               ],
             )),
-        body: userId != ""
+        body: userId != null
             ? pageSelected == 0
                 ? HomePage(userId: userId, socketChannel: socket)
                 : pageSelected == 1

@@ -38,6 +38,8 @@ class _LoginPageState extends State<LoginPage> {
         saveDataToLocalStorage(
             "username", jsonDecode(response.body)['username']);
 
+        saveDataToLocalStorage("profilePicURL", jsonDecode(response.body)["profilePic"]);
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const AuthGate()));
       }
