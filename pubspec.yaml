@@ -34,7 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   http: ^1.2.1
   shared_preferences: ^2.0.9
-  location: ^7.0.0
+  location: ^7.0.1
   flutter_dotenv: ^5.1.0
   web_socket_channel: ^2.0.0
   flutter_svg: ^2.0.10+1

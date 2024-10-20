@@ -30,7 +30,6 @@ class _LoginPageState extends State<LoginPage> {
 
     var response = http.put(Uri.parse(paramsApiUrl));
     response.then((http.Response response) {
-      print(response.body);
       showSnackbar(context, jsonDecode(response.body)['msg'],
           response.statusCode == 400);
 

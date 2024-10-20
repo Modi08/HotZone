@@ -22,14 +22,18 @@ void requestLocationPermission() async {
   int locationPermissionStatus =
       await locationPermissionChannel.invokeMethod("getLocationPermission");
   if (locationPermissionStatus == 2) {
+    return;
   } else if (locationPermissionStatus == 0) {
     return;
   } else if (locationPermissionStatus == 1) {
-    const AlertDialog(content: Text("Please enable location permissions"),);
+    const AlertDialog(
+      content: Text("Please enable location permissions"),
+    );
   }
 }
 
 Future<List<double?>> getLocation() async {
+  print("hi");
   final locationPoint = Location();
   var location = await locationPoint.getLocation();
   return [location.latitude, location.longitude, location.accuracy];

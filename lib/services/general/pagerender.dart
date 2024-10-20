@@ -23,6 +23,7 @@ class PageRender extends StatefulWidget {
 }
 
 class _PageRenderState extends State<PageRender> {
+  bool isSocketInitialized = false;
   late WebSocketChannel socket;
   String? userId;
   String? profilePic;
@@ -35,6 +36,7 @@ class _PageRenderState extends State<PageRender> {
   }
 
   void joinRoom(data) async {
+    print(data);
     Future<String?> parUserID = readDataFromLocalStorage("userId");
 
     await dotenv.load();
@@ -47,6 +49,7 @@ class _PageRenderState extends State<PageRender> {
       setState(() {
         socket = connectToWebsocket(paramsApiUrl);
         userId = userID;
+        isSocketInitialized = true;
       });
       socket.sink.add(jsonEncode(
           {"action": "ChatDetails", "lat": data[0], "long": data[1]}));
@@ -71,6 +74,8 @@ class _PageRenderState extends State<PageRender> {
   @override
   void initState() {
     super.initState();
+    requestLocationPermission();
+
     Future<bool> status = Location().serviceEnabled();
     status.then((data) {
       if (data) {
@@ -81,7 +86,16 @@ class _PageRenderState extends State<PageRender> {
 
   @override
   Widget build(BuildContext context) {
-    requestLocationPermission();
+    if (!isSocketInitialized) {
+      requestLocationPermission();
+/*
+      Future<bool> status = Location().serviceEnabled();
+      status.then((data) {
+        if (data) {
+          getLocation().then((data) => joinRoom(data));
+        }
+      });*/
+    }
 
     readDataFromLocalStorage("userChallenge").then((data) {
       if (data == null || data == "") {
