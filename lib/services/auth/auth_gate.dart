@@ -29,18 +29,20 @@ class _AuthGateState extends State<AuthGate> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+
     isUserIdFound.then((value) {
       if (value == null) {
-        setisLoggedin(false, value!);
+        setisLoggedin(false, value);
       } else {
         setisLoggedin(true, value);
       }
     });
 
     if (isLoggedin) {
-      return PageRender(title: "Chat Room", userId: userId);
+      return PageRender(title: "Chat Room", userId: userId, screenSize: screenSize);
     } else {
-      return const LoginOrRegister();
+      return LoginOrRegister(screenSize: screenSize);
     }
   }
 }

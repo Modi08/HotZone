@@ -8,8 +8,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage(
-      {super.key, required this.userId, required this.socketChannel});
+      {super.key, required this.userId, required this.socketChannel, required this.screenSize});
   final String? userId;
+  final Size screenSize;
   final WebSocketChannel socketChannel;
 
   @override
@@ -92,12 +93,12 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.76,
+                      width: widget.screenSize.width * 0.76,
                       child: MyTextField(
                           controller: msgController,
                           hintText: "Type message here")),
-                  const SizedBox(
-                    width: 10,
+                  SizedBox(
+                    width: widget.screenSize.width * 0.024,
                   ),
                   Container(
                     decoration: BoxDecoration(
