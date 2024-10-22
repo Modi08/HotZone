@@ -15,11 +15,15 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   Future<String?> isUserIdFound = readDataFromLocalStorage("userId");
+  late String userId;
   bool isLoggedin = false;
 
-  void setisLoggedin(bool value) {
+  void setisLoggedin(bool value, String? userID) {
     setState(() {
       isLoggedin = value;
+      if (value) {
+        userId = userID!;
+      }
     });
   }
 
@@ -27,14 +31,14 @@ class _AuthGateState extends State<AuthGate> {
   Widget build(BuildContext context) {
     isUserIdFound.then((value) {
       if (value == null) {
-        setisLoggedin(false);
+        setisLoggedin(false, value!);
       } else {
-        setisLoggedin(true);
+        setisLoggedin(true, value);
       }
     });
 
     if (isLoggedin) {
-      return const PageRender(title: "Chat Room");
+      return PageRender(title: "Chat Room", userId: userId);
     } else {
       return const LoginOrRegister();
     }

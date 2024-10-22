@@ -33,7 +33,6 @@ void requestLocationPermission() async {
 }
 
 Future<List<double?>> getLocation() async {
-  print("hi");
   final locationPoint = Location();
   var location = await locationPoint.getLocation();
   return [location.latitude, location.longitude, location.accuracy];

@@ -12,11 +12,13 @@ class UserTile extends StatefulWidget {
       required this.email,
       required this.crossAxisCount,
       required this.socketChannel,
-      required this.profilePic});
+      required this.profilePic,
+      required this.userId});
   final String name;
   final String email;
   final int crossAxisCount;
   final String profilePic;
+  final String userId;
   final WebSocketChannel socketChannel;
 
   @override
@@ -28,7 +30,6 @@ class _UserTileState extends State<UserTile> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.profilePic);
     return DecoratedBox(
       decoration: BoxDecoration(
           color: const Color.fromARGB(255, 178, 227, 249),
@@ -69,8 +70,8 @@ class _UserTileState extends State<UserTile> {
                             onTap: () {
                               readDataFromLocalStorage("username")
                                   .then((username) {
-                                readDataFromLocalStorage("userId")
-                                    .then((userId) {
+                                readDataFromLocalStorage("roomId")
+                                    .then((roomId) {
                                   widget.socketChannel.sink.add(jsonEncode({
                                     "action": "challengeUsers",
                                     "username": username,
@@ -78,7 +79,8 @@ class _UserTileState extends State<UserTile> {
                                         .convert(utf8.encode(widget.email))
                                         .toString(),
                                     "type": "chess",
-                                    "userId": userId
+                                    "userId": widget.userId,
+                                    "roomId": roomId
                                   }));
                                 });
                               });
@@ -89,12 +91,6 @@ class _UserTileState extends State<UserTile> {
                                         title: Text(
                                             "Request Sent to ${widget.name}"),
                                       ));
-                              /*
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const ChessGame()),
-                              );*/
                             },
                           ),
                           PopupMenuItem(

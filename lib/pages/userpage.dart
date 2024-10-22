@@ -47,7 +47,9 @@ class _UserpageState extends State<Userpage> {
         name: name,
         crossAxisCount: getCrossAxisCount(length),
         socketChannel: widget.socketChannel,
-        profilePic: profilePic);
+        profilePic: profilePic, 
+        userId: widget.userId,
+        );
   }
 
   @override
