@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                           controller: msgController,
                           hintText: "Type message here")),
                   SizedBox(
-                    width: widget.screenSize.width * 0.12,
+                    width: widget.screenSize.width * 0.024,
                   ),
                   Container(
                     decoration: BoxDecoration(
