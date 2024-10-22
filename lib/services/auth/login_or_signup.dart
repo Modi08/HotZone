@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:nearmessageapp/pages/loginpage.dart';
 import 'package:nearmessageapp/pages/signuppage.dart';
 
-
 class LoginOrRegister extends StatefulWidget {
-  const LoginOrRegister({super.key});
+  const LoginOrRegister({super.key, required this.screenSize});
+  final Size screenSize;
 
   @override
   State<LoginOrRegister> createState() => _LoginOrRegisterState();
 }
 
 class _LoginOrRegisterState extends State<LoginOrRegister> {
-
   bool showLoginPage = true;
 
   void togglePages() {
@@ -22,10 +21,10 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
 
   @override
   Widget build(BuildContext context) {
-    if (showLoginPage){
-      return LoginPage(onTap: togglePages);
+    if (showLoginPage) {
+      return LoginPage(onTap: togglePages, screenSize: widget.screenSize);
     } else {
-      return RegisterPage(onTap: togglePages);
+      return RegisterPage(onTap: togglePages, screenSize: widget.screenSize);
     }
   }
 }

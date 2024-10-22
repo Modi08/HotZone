@@ -9,10 +9,11 @@ import 'package:nearmessageapp/services/auth/auth_gate.dart';
 import 'package:nearmessageapp/services/general/localstorage.dart';
 import 'package:nearmessageapp/services/general/snackbar.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {  
+  const RegisterPage({super.key, required this.onTap, required this.screenSize});
   final void Function()? onTap;
-  const RegisterPage({super.key, required this.onTap});
-
+  final Size screenSize;
+  
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
@@ -65,37 +66,37 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const SizedBox(height: 50),
+              SizedBox(height: widget.screenSize.height * 0.06),
               Icon(
                 Icons.message,
-                size: 80,
+                size: widget.screenSize.height * 0.095,
                 color: Colors.grey[800],
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: widget.screenSize.height * 0.06),
               const Text(
                 "Let's create your account",
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 25),
+              SizedBox(height: widget.screenSize.height * 0.03),
               MyTextField(controller: usernameController, hintText: "Username"),
-              const SizedBox(height: 10),
+              SizedBox(height: widget.screenSize.height * 0.012),
               MyTextField(controller: emailController, hintText: "Email"),
-              const SizedBox(height: 10),
+              SizedBox(height: widget.screenSize.height * 0.012),
               MyTextField(
                   controller: pwdController,
                   hintText: "Password",
                   obscureText: true),
-              const SizedBox(height: 10),
+              SizedBox(height: widget.screenSize.height * 0.012),
               MyTextField(
                   controller: confirmPwdController,
                   hintText: "Confirm Password",
                   obscureText: true),
-              const SizedBox(
-                height: 25,
+              SizedBox(
+                height: widget.screenSize.height * 0.03,
               ),
               CButton(onTap: signUp, text: "Sign up"),
-              const SizedBox(
-                height: 50,
+              SizedBox(
+                height: widget.screenSize.height * 0.06,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

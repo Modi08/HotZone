@@ -10,8 +10,9 @@ import 'package:nearmessageapp/services/general/localstorage.dart';
 import 'package:nearmessageapp/services/general/snackbar.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key, required this.onTap, required this.screenSize});
   final void Function()? onTap;
-  const LoginPage({super.key, required this.onTap});
+  final Size screenSize;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -58,30 +59,30 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const SizedBox(height: 50),
+              SizedBox(height: widget.screenSize.height * 0.06),
               Icon(
                 Icons.message,
-                size: 80,
+                size: widget.screenSize.height * 0.095,
                 color: Colors.grey[800],
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: widget.screenSize.height * 0.06),
               const Text(
                 "Welcome back. You' ve been missed!",
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 25),
+              SizedBox(height: widget.screenSize.height * 0.03),
               MyTextField(controller: emailController, hintText: "Email"),
-              const SizedBox(height: 10),
+              SizedBox(height: widget.screenSize.height * 0.0119),
               MyTextField(
                   controller: pwdController,
                   hintText: "Password",
                   obscureText: true),
-              const SizedBox(
-                height: 25,
+              SizedBox(
+                height: widget.screenSize.height * 0.03,
               ),
               CButton(onTap: login, text: "Login"),
-              const SizedBox(
-                height: 50,
+              SizedBox(
+                height: widget.screenSize.height * 0.06,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

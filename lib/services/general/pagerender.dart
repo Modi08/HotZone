@@ -16,9 +16,10 @@ import 'package:nearmessageapp/services/general/cordslocation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class PageRender extends StatefulWidget {
-  const PageRender({super.key, required this.title, required this.userId});
+  const PageRender({super.key, required this.title, required this.userId, required this.screenSize});
   final String title;
   final String userId;
+  final Size screenSize;
 
   @override
   State<PageRender> createState() => _PageRenderState();
@@ -160,7 +161,7 @@ class _PageRenderState extends State<PageRender> {
 
     return Scaffold(
         appBar: AppBar(
-            toolbarHeight: 100,
+            toolbarHeight: widget.screenSize.height * 0.12,
             backgroundColor: const Color.fromARGB(255, 0, 34, 255),
             title: Column(
               children: [
@@ -215,9 +216,9 @@ class _PageRenderState extends State<PageRender> {
                         },
                         child: Panel(
                             title: "General chat",
-                            width: 100,
+                            width: widget.screenSize.width * 0.24,
                             selected: pageSelected == 0)),
-                    const SizedBox(width: 10),
+                    SizedBox(width: widget.screenSize.width * 0.024),
                     TextButton(
                         onPressed: () {
                           setState(() {
@@ -226,9 +227,9 @@ class _PageRenderState extends State<PageRender> {
                         },
                         child: Panel(
                             title: "Users",
-                            width: 50,
+                            width:  widget.screenSize.width * 0.12,
                             selected: pageSelected == 1)),
-                    const SizedBox(width: 10),
+                    SizedBox(width: widget.screenSize.width * 0.024),
                     TextButton(
                         onPressed: () {
                           setState(() {
@@ -237,7 +238,7 @@ class _PageRenderState extends State<PageRender> {
                         },
                         child: Panel(
                             title: "Activities",
-                            width: 70,
+                            width:  widget.screenSize.width * 0.17,
                             selected: pageSelected == 2))
                   ],
                 ),
@@ -245,7 +246,7 @@ class _PageRenderState extends State<PageRender> {
             )),
         body: isSocketInitialized
             ? pageSelected == 0
-                ? HomePage(userId: widget.userId, socketChannel: socket)
+                ? HomePage(userId: widget.userId, socketChannel: socket, screenSize: widget.screenSize)
                 : pageSelected == 1
                     ? Userpage(socketChannel: socket, userId: widget.userId)
                     : const Activitiespage()
