@@ -31,6 +31,7 @@ void processMsg(
   switch (statusCode) {
     case 100: // Empty Message
       break;
+    
     case 201: // Get room details
       List<String> cords = data["roomId"].split(",");
 
