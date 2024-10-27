@@ -15,11 +15,13 @@ class ChessGame extends StatefulWidget {
       required this.oppName,
       required this.isWhite,
       required this.socketChannel,
-      required this.gameId});
+      required this.gameId,
+      required this.screenSize});
   final String oppName;
   final bool isWhite;
   final WebSocketChannel socketChannel;
   final String gameId;
+  final Size screenSize;
 
   @override
   State<ChessGame> createState() => _ChessGameState();
@@ -678,7 +680,7 @@ class _ChessGameState extends State<ChessGame> {
     return Scaffold(
         backgroundColor: backgroundColor,
         body: Column(children: [
-          const SizedBox(height: 30),
+          SizedBox(height: widget.screenSize.height * 0.035),
           Row(
             children: [
               const Spacer(),
@@ -700,7 +702,9 @@ class _ChessGameState extends State<ChessGame> {
                       isWhite: true))),
           widget.isWhite
               ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  !isWhiteTurn ? Icon(Icons.circle, size: 17, color: Colors.yellow[700]) : const SizedBox(),
+                  !isWhiteTurn
+                      ? Icon(Icons.circle, size: 17, color: Colors.yellow[700])
+                      : const SizedBox(),
                   const SizedBox(width: 5),
                   const Icon(Icons.circle, size: 35),
                   const SizedBox(width: 10),
@@ -746,7 +750,9 @@ class _ChessGameState extends State<ChessGame> {
           ),
           !widget.isWhite
               ? Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  isWhiteTurn ? Icon(Icons.circle, size: 17, color: Colors.yellow[700]) : const SizedBox(),
+                  isWhiteTurn
+                      ? Icon(Icons.circle, size: 17, color: Colors.yellow[700])
+                      : const SizedBox(),
                   const SizedBox(width: 5),
                   const Icon(Icons.circle, size: 35),
                   const SizedBox(width: 10),

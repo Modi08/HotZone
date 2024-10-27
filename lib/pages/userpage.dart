@@ -8,9 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Userpage extends StatefulWidget {
   const Userpage(
-      {super.key,
-      required this.socketChannel,
-      required this.userId});
+      {super.key, required this.socketChannel, required this.userId});
   final WebSocketChannel socketChannel;
   final String userId;
 
@@ -34,22 +32,23 @@ class _UserpageState extends State<Userpage> {
 
   List<Widget> buildUserItemList(List<dynamic> userList) {
     List<Widget> userWidgetList = userList
-        .map((document) =>
-            buildUserItem(document["email"], document["name"], userList.length, document["profilePic"]))
+        .map((document) => buildUserItem(document["email"], document["name"],
+            userList.length, document["profilePic"]))
         .toList();
 
     return userWidgetList;
   }
 
-  Widget buildUserItem(String email, String name, int length, String profilePic) {
+  Widget buildUserItem(
+      String email, String name, int length, String profilePic) {
     return UserTile(
-        email: email,
-        name: name,
-        crossAxisCount: getCrossAxisCount(length),
-        socketChannel: widget.socketChannel,
-        profilePic: profilePic, 
-        userId: widget.userId,
-        );
+      email: email,
+      name: name,
+      crossAxisCount: getCrossAxisCount(length),
+      socketChannel: widget.socketChannel,
+      profilePic: profilePic,
+      userId: widget.userId,
+    );
   }
 
   @override
@@ -64,6 +63,7 @@ class _UserpageState extends State<Userpage> {
 
   @override
   Widget build(BuildContext context) {
+    
     int crossAxisCount = getCrossAxisCount(userWidgetList.length);
 
     readDataFromLocalStorage("userList").then((data) {

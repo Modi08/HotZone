@@ -151,7 +151,8 @@ class _PageRenderState extends State<PageRender> {
                 oppName: gameInfo["oppName"],
                 isWhite: gameInfo["isWhite"],
                 socketChannel: socket,
-                gameId: gameInfo["gameId"])),
+                gameId: gameInfo["gameId"],
+                screenSize: widget.screenSize)),
       );
 
       saveDataToLocalStorage("userGame", "");
@@ -258,7 +259,7 @@ class _PageRenderState extends State<PageRender> {
                     screenSize: widget.screenSize)
                 : pageSelected == 1
                     ? Userpage(socketChannel: socket, userId: widget.userId)
-                    : const Activitiespage()
+                    : Activitiespage(socketChannel: socket)
             /*ChessGame(
                         oppName: "Ekansh",
                         isWhite: true,

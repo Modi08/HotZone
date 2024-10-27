@@ -69,5 +69,15 @@ void processMsg(
 
     case 206: // New move has come in
       saveDataToLocalStorage("move", jsonEncode(data["body"]));
+
+    case 207: // Activities List recived
+      
+      if (data["activities"] != "[]") {
+        var activities = jsonDecode(data["activities"]);
+        print(activities);
+        saveDataToLocalStorage("activitiesList", jsonEncode(activities));
+      } else {
+        saveDataToLocalStorage("activitiesList", "[0]");
+      }
   }
 }
