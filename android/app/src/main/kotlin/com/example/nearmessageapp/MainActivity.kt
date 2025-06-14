@@ -1,4 +1,4 @@
-package com.example.nearmessageapp
+package com.prod.hotzone
 
 import android.Manifest
 import android.content.pm.PackageManager

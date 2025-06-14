@@ -1,0 +1,2 @@
+C:/Users/sande/OneDrive/schoolwork/App/Flutter/HotZone/android/app/.cxx/Debug/6a42y4r2/x86/CMakeFiles/edit_cache.dir
+C:/Users/sande/OneDrive/schoolwork/App/Flutter/HotZone/android/app/.cxx/Debug/6a42y4r2/x86/CMakeFiles/rebuild_cache.dir
