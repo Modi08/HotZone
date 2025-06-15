@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 
-void requestLocationPermission() async {
+Future<bool> requestLocationPermission() async {
   /*
   PermissionStatus permission = await location.hasPermission();
   if (permission == PermissionStatus.denied) {
@@ -21,14 +22,16 @@ void requestLocationPermission() async {
 
   int locationPermissionStatus =
       await locationPermissionChannel.invokeMethod("getLocationPermission");
+      
   if (locationPermissionStatus == 2) {
-    return;
+    return true;
   } else if (locationPermissionStatus == 0) {
-    return;
-  } else if (locationPermissionStatus == 1) {
+    return false;
+  } else {
     const AlertDialog(
       content: Text("Please enable location permissions"),
     );
+    return false;
   }
 }
 

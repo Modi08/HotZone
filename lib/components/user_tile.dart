@@ -97,7 +97,7 @@ class _UserTileState extends State<UserTile> {
                             child: const Text('Option 2'),
                             onTap: () {
                               // Handle Option 2 click
-                              print('Option 2 clicked');
+                              debugPrint('Option 2 clicked');
                             },
                           ),
                         ]);

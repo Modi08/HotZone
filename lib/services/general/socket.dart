@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:nearmessageapp/services/general/localstorage.dart';
@@ -27,7 +28,8 @@ void listendMsg(WebSocketChannel socket, Function refreshPage) {
 
 void processMsg(
     int statusCode, Map<String, dynamic> data, WebSocketChannel socket, Function refreshPage) {
-  print(statusCode);
+  log(statusCode.toString());
+  
   switch (statusCode) {
     case 100: // Empty Message
       break;
@@ -74,7 +76,7 @@ void processMsg(
       
       if (data["activities"] != "[]") {
         var activities = jsonDecode(data["activities"]);
-        print(activities);
+        log(activities);
         saveDataToLocalStorage("activitiesList", jsonEncode(activities));
       } else {
         saveDataToLocalStorage("activitiesList", "[0]");

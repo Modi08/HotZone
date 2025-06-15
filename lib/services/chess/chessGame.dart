@@ -439,7 +439,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   void movePiece(int newRow, int newCol, ChessPiece? piece, bool? hasMoved) {
-    //print("$selectedRow, $selectedCol, $newRow, $newCol");
+    //debugPrint("$selectedRow, $selectedCol, $newRow, $newCol");
 
     if (board[newRow][newCol] != null) {
       if (board[newRow][newCol]!.isWhite) {
@@ -452,7 +452,7 @@ class _ChessGameState extends State<ChessGame> {
     board[newRow][newCol] = selectedPiece;
     board[selectedRow][selectedCol] = null;
 
-    print("$whiteKingPos, $blackKingPos");
+    debugPrint("$whiteKingPos, $blackKingPos");
     if (isKingInCheck(!isWhiteTurn)) {
       checkStatus = true;
     } else {
@@ -510,7 +510,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool isKingInCheck(bool isWhiteKing) {
-    print(isWhiteKing);
+    debugPrint(isWhiteKing.toString());
     List<int> kingPos = isWhiteKing ? whiteKingPos : blackKingPos;
 
     for (int i = 0; i < 8; i++) {
@@ -524,7 +524,7 @@ class _ChessGameState extends State<ChessGame> {
 
         if (pieceValidMoves
             .any((move) => move[0] == kingPos[0] && move[1] == kingPos[1])) {
-          print("${board[i][j]!.type}, $kingPos");
+          debugPrint("${board[i][j]!.type}, $kingPos");
           return true;
         }
       }
@@ -533,7 +533,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   String? isSpecialMove(ChessPiece piece, int newCol, bool? hasMoved) {
-    print("${piece.type}, $hasMoved, $newCol");
+    debugPrint("${piece.type}, $hasMoved, $newCol");
 
     if (piece.type == ChessPieceType.king &&
         hasMoved != null &&
@@ -632,7 +632,7 @@ class _ChessGameState extends State<ChessGame> {
   Widget build(BuildContext context) {
     readDataFromLocalStorage("move").then((value) {
       if (value != "") {
-        print(value);
+        debugPrint(value);
         var currentPos = jsonDecode(value!)["currentPos"];
         var nextPos = jsonDecode(value)["nextPos"];
         String? specialMove = jsonDecode(value)["specialMove"];

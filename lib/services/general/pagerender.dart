@@ -48,6 +48,7 @@ class _PageRenderState extends State<PageRender> {
     final paramsApiUrl =
         "$apiUrl?lat=${data[0]}&long=${data[1]}&userId=${widget.userId}";
 
+    debugPrint("Connecting to: $paramsApiUrl");
     setState(() {
       socket = connectToWebsocket(paramsApiUrl);
       isSocketInitialized = true;
@@ -74,9 +75,9 @@ class _PageRenderState extends State<PageRender> {
   @override
   void initState() {
     super.initState();
-    requestLocationPermission();
+    
 
-    Future<bool> status = Location().serviceEnabled();
+    Future<bool> status = requestLocationPermission();
     status.then((data) {
       if (data) {
         getLocation().then((data) => joinRoom(data));
@@ -143,7 +144,7 @@ class _PageRenderState extends State<PageRender> {
         return null;
       }
       Map<String, dynamic> gameInfo = jsonDecode(data);
-      print(gameInfo["gameId"]);
+      debugPrint(gameInfo["gameId"]);
       Navigator.push(
         context,
         MaterialPageRoute(
