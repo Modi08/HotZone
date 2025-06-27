@@ -3,15 +3,21 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/chat_bubble.dart';
 import 'package:nearmessageapp/components/text_field.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/keyValueStore.dart';
+import 'package:nearmessageapp/services/storage/msgStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage(
-      {super.key, required this.userId, required this.socketChannel, required this.screenSize});
+      {super.key,
+      required this.userId,
+      required this.socketChannel,
+      required this.screenSize,
+      required this.msgDatabase});
   final String? userId;
   final Size screenSize;
   final WebSocketChannel socketChannel;
+  final DatabaseServiceMsg msgDatabase;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -65,16 +71,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> messageList = buildMessageWidgetsLists();
-    readDataFromLocalStorage("messages").then((data) {
-      if (data == null) {
-        setState(() {
-          messages = [];
-        });
-      } else if (data != "") {
-        setState(() {
-          messages = jsonDecode(data);
-        });
-      }
+
+    widget.msgDatabase.queryAll().then((data) {
+      setState(() {
+        messages = data;
+      });
     });
 
     return Center(

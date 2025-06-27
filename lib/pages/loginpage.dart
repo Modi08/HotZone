@@ -6,13 +6,18 @@ import 'package:nearmessageapp/components/button.dart';
 import 'package:nearmessageapp/components/text_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearmessageapp/services/auth/auth_gate.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:nearmessageapp/services/general/snackbar.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.onTap, required this.screenSize});
+  const LoginPage(
+      {super.key,
+      required this.onTap,
+      required this.screenSize,
+      required this.userDatabase});
   final void Function()? onTap;
   final Size screenSize;
+  final DatabaseServiceUser userDatabase;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -35,16 +40,19 @@ class _LoginPageState extends State<LoginPage> {
           response.statusCode == 400);
 
       if (response.statusCode == 200) {
-        saveDataToLocalStorage("userId", jsonDecode(response.body)['userId']);
-
-        saveDataToLocalStorage(
-            "username", jsonDecode(response.body)['username']);
-
-        saveDataToLocalStorage(
-            "profilePic", jsonDecode(response.body)["profilePic"]);
+        User userData = User(
+          id: jsonDecode(response.body)['userId'],
+          email: jsonDecode(response.body)["userData"]['email'],
+          username: jsonDecode(response.body)["userData"]['username'],
+          profilePic: jsonDecode(response.body)["userData"]["profilePic"],
+          connectionId: "",
+          isPrimary: true,
+          );
+          widget.userDatabase.clearAll();
+          widget.userDatabase.insert(userData);
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const AuthGate()));
+            context, MaterialPageRoute(builder: (context) => AuthGate(userDatabase: widget.userDatabase)));
       }
     });
   }

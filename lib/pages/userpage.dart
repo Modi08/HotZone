@@ -3,14 +3,21 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/user_tile.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/keyValueStore.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Userpage extends StatefulWidget {
   const Userpage(
-      {super.key, required this.socketChannel, required this.userId});
+      {super.key,
+      required this.socketChannel,
+      required this.userId,
+      required this.userData,
+      required this.userDatabase});
   final WebSocketChannel socketChannel;
   final String userId;
+  final User userData;
+  final DatabaseServiceUser userDatabase;
 
   @override
   State<Userpage> createState() => _UserpageState();
@@ -48,13 +55,13 @@ class _UserpageState extends State<Userpage> {
       socketChannel: widget.socketChannel,
       profilePic: profilePic,
       userId: widget.userId,
+      userData: widget.userData,
     );
   }
 
   @override
   void initState() {
     super.initState();
-    saveDataToLocalStorage("userList", "[]");
     readDataFromLocalStorage("cords").then((data) {
       widget.socketChannel.sink.add(jsonEncode(
           {"action": "userDetails", "userId": widget.userId, "roomId": data}));
@@ -63,27 +70,19 @@ class _UserpageState extends State<Userpage> {
 
   @override
   Widget build(BuildContext context) {
-    
     int crossAxisCount = getCrossAxisCount(userWidgetList.length);
 
-    readDataFromLocalStorage("userList").then((data) {
-      if (data != "[]" && data != "[0]") {
-        if (userList.length != jsonDecode(data!).length) {
-          setState(() {
-            userList = jsonDecode(data);
-            userWidgetList = buildUserItemList(userList);
-          });
+    widget.userDatabase.queryAllExcept(widget.userId).then((data) {
+      setState(() {
+        if (data.isEmpty) {
+          userList = [0]; // If no users found, set to a list with a single zero
+        } else {
+          userList = data;
+          userWidgetList = buildUserItemList(userList);
         }
-      } else if (data == "[0]") {
-        setState(() {
-          userList = [0];
-        });
-      } else {
-        setState(() {
-          userList = [];
-        });
-      }
+      });
     });
+
     return userList.isEmpty
         ? const Center(
             child: SizedBox(child: CircularProgressIndicator.adaptive()))

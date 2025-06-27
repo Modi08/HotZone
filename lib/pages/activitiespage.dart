@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/activities_tile.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/keyValueStore.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Activitiespage extends StatefulWidget {

@@ -5,14 +5,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nearmessageapp/services/general/imageUpload.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Profilepage extends StatefulWidget {
   final String userId;
   final WebSocketChannel socketChannel;
-  const Profilepage({super.key, required this.userId, required this.socketChannel});
+  final User userData;
+  final DatabaseServiceUser userDatabase;
+  const Profilepage(
+      {super.key,
+      required this.userId,
+      required this.socketChannel,
+      required this.userData,
+      required this.userDatabase});
 
   @override
   State<Profilepage> createState() => _ProfilepageState();
@@ -39,25 +46,26 @@ class _ProfilepageState extends State<Profilepage> {
         filename: "${widget.userId}.png",
       );
 
-      var profilePicURL = "https://hotzone-talwar.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png";
-      saveDataToLocalStorage("profilePic", profilePicURL);
+      var profilePicURL =
+          "https://hotzone-talwar.s3.eu-central-1.amazonaws.com/profilePics/${widget.userId}.png";
+
+      widget.userData.profilePic = profilePicURL;
+      widget.userDatabase.update(widget.userData);
 
       widget.socketChannel.sink.add(jsonEncode({
         "action": "saveProfilePic",
         "userId": widget.userId,
         "profilePic": profilePicURL
       }));
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    readDataFromLocalStorage("username").then((data) {
-      setState(() {
-        username = data;
-      });
+    setState(() {
+      username = widget.userData.username;
     });
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,

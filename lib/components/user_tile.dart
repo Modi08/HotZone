@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/keyValueStore.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:crypto/crypto.dart';
 
@@ -13,12 +14,14 @@ class UserTile extends StatefulWidget {
       required this.crossAxisCount,
       required this.socketChannel,
       required this.profilePic,
-      required this.userId});
+      required this.userId,
+      required this.userData});
   final String name;
   final String email;
   final int crossAxisCount;
   final String profilePic;
   final String userId;
+  final User userData;
   final WebSocketChannel socketChannel;
 
   @override
@@ -68,21 +71,17 @@ class _UserTileState extends State<UserTile> {
                           PopupMenuItem(
                             child: const Text('Play Chess Game'),
                             onTap: () {
-                              readDataFromLocalStorage("username")
-                                  .then((username) {
-                                readDataFromLocalStorage("roomId")
-                                    .then((roomId) {
-                                  widget.socketChannel.sink.add(jsonEncode({
-                                    "action": "challengeUsers",
-                                    "username": username,
-                                    "target": sha256
-                                        .convert(utf8.encode(widget.email))
-                                        .toString(),
-                                    "type": "chess",
-                                    "userId": widget.userId,
-                                    "roomId": roomId
-                                  }));
-                                });
+                              readDataFromLocalStorage("cords").then((roomId) {
+                                widget.socketChannel.sink.add(jsonEncode({
+                                  "action": "challengeUsers",
+                                  "username": widget.userData.username,
+                                  "target": sha256
+                                      .convert(utf8.encode(widget.email))
+                                      .toString(),
+                                  "type": "chess",
+                                  "userId": widget.userId,
+                                  "roomId": roomId
+                                }));
                               });
 
                               showDialog(

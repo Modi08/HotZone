@@ -5,7 +5,8 @@ import 'package:nearmessageapp/components/chess/deadpiece.dart';
 import 'package:nearmessageapp/components/chess/piece.dart';
 import 'package:nearmessageapp/components/chess/square.dart';
 import 'package:nearmessageapp/services/chess/helper_methods.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/keyValueStore.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:nearmessageapp/values/chess/colors.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 

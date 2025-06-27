@@ -40,6 +40,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   image_picker: ^1.1.2
   aws_s3_upload_lite: ^0.1.4
+  sqflite: ^2.4.2
 
 
 

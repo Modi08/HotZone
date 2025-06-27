@@ -6,14 +6,19 @@ import 'package:nearmessageapp/components/button.dart';
 import 'package:nearmessageapp/components/text_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearmessageapp/services/auth/auth_gate.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:nearmessageapp/services/general/snackbar.dart';
 
-class RegisterPage extends StatefulWidget {  
-  const RegisterPage({super.key, required this.onTap, required this.screenSize});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage(
+      {super.key,
+      required this.onTap,
+      required this.screenSize,
+      required this.userDatabase});
   final void Function()? onTap;
   final Size screenSize;
-  
+  final DatabaseServiceUser userDatabase;
+
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
@@ -42,14 +47,22 @@ class _RegisterPageState extends State<RegisterPage> {
           response.statusCode == 400);
 
       if (response.statusCode == 200) {
-        saveDataToLocalStorage("userId", jsonDecode(response.body)['userId']);
-
-        saveDataToLocalStorage("username", usernameController.text);
-
-        saveDataToLocalStorage("profilePic", jsonDecode(response.body)['profilePic']);
+        User userData = User(
+          id: jsonDecode(response.body)['userId'],
+          email: jsonDecode(response.body)['email'],
+          username: jsonDecode(response.body)['username'],
+          profilePic: jsonDecode(response.body)["profilePic"],
+          connectionId: "",
+          isPrimary: true,
+        );
+        
+        widget.userDatabase.clearAll();
+        widget.userDatabase.insert(userData);
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const AuthGate()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => AuthGate(userDatabase: widget.userDatabase)));
       }
     });
   }

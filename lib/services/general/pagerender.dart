@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:location/location.dart';
 import 'package:nearmessageapp/components/panel.dart';
 import 'package:nearmessageapp/pages/activitiespage.dart';
 import 'package:nearmessageapp/pages/profilepage.dart';
@@ -11,8 +10,11 @@ import 'package:nearmessageapp/pages/homepage.dart';
 import 'package:nearmessageapp/pages/userpage.dart';
 import 'package:nearmessageapp/services/general/socket.dart';
 import 'package:nearmessageapp/services/auth/auth_gate.dart';
-import 'package:nearmessageapp/services/general/localstorage.dart';
+import 'package:nearmessageapp/services/storage/keyValueStore.dart';
+import 'package:nearmessageapp/services/storage/msgStore.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:nearmessageapp/services/general/cordslocation.dart';
+import 'package:sqflite/sqlite_api.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class PageRender extends StatefulWidget {
@@ -20,10 +22,16 @@ class PageRender extends StatefulWidget {
       {super.key,
       required this.title,
       required this.userId,
-      required this.screenSize});
+      required this.screenSize,
+      required this.userData,
+      required this.userDatabase,
+      required this.msgDatabase});
   final String title;
   final String userId;
   final Size screenSize;
+  final User userData;
+  final DatabaseServiceUser userDatabase;
+  final DatabaseServiceMsg msgDatabase;
 
   @override
   State<PageRender> createState() => _PageRenderState();
@@ -55,7 +63,7 @@ class _PageRenderState extends State<PageRender> {
     });
     socket.sink.add(
         jsonEncode({"action": "ChatDetails", "lat": data[0], "long": data[1]}));
-    listendMsg(socket, refreshPage);
+    listendMsg(socket, refreshPage, widget.msgDatabase);
   }
 
   void switchPage(int pageNum) {
@@ -68,14 +76,17 @@ class _PageRenderState extends State<PageRender> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                Profilepage(userId: widget.userId, socketChannel: socket)));
+            builder: (context) => Profilepage(
+                  userId: widget.userId,
+                  socketChannel: socket,
+                  userData: widget.userData,
+                  userDatabase: widget.userDatabase,
+                )));
   }
 
   @override
   void initState() {
     super.initState();
-    
 
     Future<bool> status = requestLocationPermission();
     status.then((data) {
@@ -159,12 +170,8 @@ class _PageRenderState extends State<PageRender> {
       saveDataToLocalStorage("userGame", "");
     });
 
-    readDataFromLocalStorage("profilePic").then((data) {
-      if (data != "") {
-        setState(() {
-          profilePic = data;
-        });
-      }
+    setState(() {
+      profilePic = widget.userData.profilePic;
     });
 
     return Scaffold(
@@ -204,11 +211,13 @@ class _PageRenderState extends State<PageRender> {
                     IconButton(
                         onPressed: () {
                           socket.sink.close();
-                          clearSharedPreferences();
+                          widget.userDatabase.clearAll();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const AuthGate()));
+                                  builder: (context) => AuthGate(
+                                        userDatabase: widget.userDatabase,
+                                      )));
                         },
                         icon: const Icon(Icons.logout))
                   ],
@@ -257,9 +266,16 @@ class _PageRenderState extends State<PageRender> {
                 ? HomePage(
                     userId: widget.userId,
                     socketChannel: socket,
-                    screenSize: widget.screenSize)
+                    screenSize: widget.screenSize,
+                    msgDatabase: widget.msgDatabase,
+                  )
                 : pageSelected == 1
-                    ? Userpage(socketChannel: socket, userId: widget.userId)
+                    ? Userpage(
+                        socketChannel: socket,
+                        userId: widget.userId,
+                        userData: widget.userData,
+                        userDatabase: widget.userDatabase,
+                      )
                     : Activitiespage(socketChannel: socket)
             /*ChessGame(
                         oppName: "Ekansh",
