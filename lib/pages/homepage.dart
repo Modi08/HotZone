@@ -5,6 +5,7 @@ import 'package:nearmessageapp/components/chat_bubble.dart';
 import 'package:nearmessageapp/components/text_field.dart';
 import 'package:nearmessageapp/services/storage/keyValueStore.dart';
 import 'package:nearmessageapp/services/storage/msgStore.dart';
+import 'package:nearmessageapp/values/general/colors.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomePage extends StatefulWidget {
@@ -79,57 +80,61 @@ class _HomePageState extends State<HomePage> {
     });
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SingleChildScrollView(
-            child: Column(
-              children: messageList,
+      child: Container(
+        decoration: BoxDecoration(color: backgroundColorSecondary),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: messageList,
+              ),
             ),
-          ),
-          const Spacer(),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                      width: widget.screenSize.width * 0.76,
-                      child: MyTextField(
-                          controller: msgController,
-                          hintText: "Type message here")),
-                  SizedBox(
-                    width: widget.screenSize.width * 0.01,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.blueGrey,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: IconButton(
-                        onPressed: () {
-                          readDataFromLocalStorage("cords").then((data) {
-                            List<String> cords = data!.split(",");
+            const Spacer(),
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width: widget.screenSize.width * 0.76,
+                        child: MyTextField(
+                            controller: msgController,
+                            hintText: "Type message here")),
+                    SizedBox(
+                      width: widget.screenSize.width * 0.01,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: accentColorPrimary,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: IconButton(
+                          onPressed: () {
+                            readDataFromLocalStorage("cords").then((data) {
+                              List<String> cords = data!.split(",");
 
-                            String lat = cords[0];
-                            String lon = cords[1];
+                              String lat = cords[0];
+                              String lon = cords[1];
 
-                            widget.socketChannel.sink.add(jsonEncode({
-                              "action": "sendMessage",
-                              "msg": msgController.text,
-                              "time": DateTime.now().toString(),
-                              "sender": widget.userId,
-                              "lat": lat,
-                              "lon": lon
-                            }));
-                            msgController.text = "";
-                          });
-                        },
-                        icon: const Icon(Icons.send)),
-                  )
-                ],
-              )),
-          const SizedBox(height: 10)
-        ],
+                              widget.socketChannel.sink.add(jsonEncode({
+                                "action": "sendMessage",
+                                "msg": msgController.text,
+                                "time": DateTime.now().toString(),
+                                "sender": widget.userId,
+                                "lat": lat,
+                                "lon": lon
+                              }));
+                              msgController.text = "";
+                            });
+                          },
+                          icon: const Icon(Icons.send)),
+                    )
+                  ],
+                )),
+            const SizedBox(height: 10)
+          ],
+        ),
       ),
     );
   }

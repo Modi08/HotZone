@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:nearmessageapp/components/panel.dart';
 import 'package:nearmessageapp/pages/activitiespage.dart';
 import 'package:nearmessageapp/pages/profilepage.dart';
 import 'package:nearmessageapp/services/chess/chessGame.dart';
@@ -14,7 +13,7 @@ import 'package:nearmessageapp/services/storage/keyValueStore.dart';
 import 'package:nearmessageapp/services/storage/msgStore.dart';
 import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:nearmessageapp/services/general/cordslocation.dart';
-import 'package:sqflite/sqlite_api.dart';
+import 'package:nearmessageapp/values/general/colors.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class PageRender extends StatefulWidget {
@@ -57,10 +56,12 @@ class _PageRenderState extends State<PageRender> {
         "$apiUrl?lat=${data[0]}&long=${data[1]}&userId=${widget.userId}";
 
     debugPrint("Connecting to: $paramsApiUrl");
+
     setState(() {
       socket = connectToWebsocket(paramsApiUrl);
       isSocketInitialized = true;
     });
+
     socket.sink.add(
         jsonEncode({"action": "ChatDetails", "lat": data[0], "long": data[1]}));
     listendMsg(socket, refreshPage, widget.msgDatabase);
@@ -87,13 +88,23 @@ class _PageRenderState extends State<PageRender> {
   @override
   void initState() {
     super.initState();
-
+    setState(() {
+      profilePic = widget.userData.profilePic;
+    });
+    
     Future<bool> status = requestLocationPermission();
     status.then((data) {
       if (data) {
         getLocation().then((data) => joinRoom(data));
       }
     });
+  }
+
+  @override
+  void dispose() {
+    widget.userDatabase.clearAll();
+    widget.msgDatabase.clearAll();
+    super.dispose();
   }
 
   @override
@@ -170,14 +181,10 @@ class _PageRenderState extends State<PageRender> {
       saveDataToLocalStorage("userGame", "");
     });
 
-    setState(() {
-      profilePic = widget.userData.profilePic;
-    });
-
     return Scaffold(
         appBar: AppBar(
             toolbarHeight: widget.screenSize.height * 0.12,
-            backgroundColor: const Color.fromARGB(255, 0, 34, 255),
+            backgroundColor: backgroundColorPrimary,
             title: Column(
               children: [
                 Row(
@@ -200,67 +207,59 @@ class _PageRenderState extends State<PageRender> {
                                 onPressed: () {
                                   pushProfilePage();
                                 },
-                                icon: const Icon(Icons.upload))
+                                icon: Icon(
+                                  Icons.upload,
+                                  color: textColorPrimary,
+                                ))
                         : const SizedBox(),
                     Text(
                       widget.title,
-                      style: const TextStyle(
-                          color: Color.fromRGBO(255, 255, 255, 1)),
+                      style: TextStyle(
+                        color: textColorPrimary,
+                      ),
                     ),
                     const Spacer(),
                     IconButton(
                         onPressed: () {
                           socket.sink.close();
-                          widget.userDatabase.clearAll();
-                          Navigator.push(
+                          Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AuthGate(
                                         userDatabase: widget.userDatabase,
-                                      )));
+                                        msgDatabase: widget.msgDatabase,
+                                      )),
+                              (route) => false);
                         },
-                        icon: const Icon(Icons.logout))
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            pageSelected = 0;
-                          });
-                        },
-                        child: Panel(
-                            title: "General chat",
-                            width: widget.screenSize.width * 0.24,
-                            selected: pageSelected == 0)),
-                    SizedBox(width: widget.screenSize.width * 0.024),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            pageSelected = 1;
-                          });
-                        },
-                        child: Panel(
-                            title: "Users",
-                            width: widget.screenSize.width * 0.12,
-                            selected: pageSelected == 1)),
-                    SizedBox(width: widget.screenSize.width * 0.024),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            pageSelected = 2;
-                          });
-                        },
-                        child: Panel(
-                            title: "Activities",
-                            width: widget.screenSize.width * 0.17,
-                            selected: pageSelected == 2))
+                        icon: Icon(
+                          Icons.logout,
+                          color: textColorPrimary,
+                        ))
                   ],
                 ),
               ],
             )),
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: accentColorPrimary,
+          unselectedItemColor: textColorPrimary,
+          backgroundColor: backgroundColorPrimary,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.chat),
+                label: 'General Chat',
+                tooltip: 'Go to General Chat'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.people),
+                label: 'Users',
+                tooltip: 'Go to Profile Page'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.leaderboard),
+                label: 'Activites',
+                tooltip: 'Go to Settings Page'),
+          ],
+          currentIndex: pageSelected,
+          onTap: switchPage,
+        ),
         body: isSocketInitialized
             ? pageSelected == 0
                 ? HomePage(

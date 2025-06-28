@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/user_tile.dart';
 import 'package:nearmessageapp/services/storage/keyValueStore.dart';
 import 'package:nearmessageapp/services/storage/userStore.dart';
+import 'package:nearmessageapp/values/general/colors.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Userpage extends StatefulWidget {
@@ -83,22 +84,30 @@ class _UserpageState extends State<Userpage> {
       });
     });
 
-    return userList.isEmpty
-        ? const Center(
-            child: SizedBox(child: CircularProgressIndicator.adaptive()))
-        : userList[0] != 0
-            ? Padding(
-                padding: crossAxisCount == 1
-                    ? const EdgeInsets.all(110)
-                    : crossAxisCount == 2
-                        ? const EdgeInsets.all(20)
-                        : const EdgeInsets.all(8),
-                child: GridView.count(
-                    crossAxisCount: crossAxisCount,
-                    mainAxisSpacing: 18,
-                    crossAxisSpacing: 18,
-                    children: userWidgetList),
-              )
-            : const Center(child: SizedBox(child: Text("No Users Found")));
+    return Container(
+      color: backgroundColorSecondary,
+      child: userList.isEmpty
+          ? const Center(
+              child: SizedBox(child: CircularProgressIndicator.adaptive()))
+          : userList[0] != 0
+              ? Padding(
+                  padding: crossAxisCount == 1
+                      ? const EdgeInsets.all(110)
+                      : crossAxisCount == 2
+                          ? const EdgeInsets.all(20)
+                          : const EdgeInsets.all(8),
+                  child: GridView.count(
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: 18,
+                      crossAxisSpacing: 18,
+                      children: userWidgetList),
+                )
+              : Center(
+                  child: SizedBox(
+                      child: Text(
+                  "No Users Found",
+                  style: TextStyle(color: textColorPrimary),
+                ))),
+    );
   }
 }
