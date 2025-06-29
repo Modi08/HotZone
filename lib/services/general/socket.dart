@@ -99,7 +99,7 @@ void processMsg(
       saveDataToLocalStorage("move", jsonEncode(data["body"]));
 
     case 207: // Activities List recived
-
+      debugPrint(data.toString());
       if (data["activities"] != "[]") {
         var activities = jsonDecode(data["activities"]);
         print(activities);

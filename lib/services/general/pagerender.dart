@@ -276,12 +276,6 @@ class _PageRenderState extends State<PageRender> {
                         userDatabase: widget.userDatabase,
                       )
                     : Activitiespage(socketChannel: socket)
-            /*ChessGame(
-                        oppName: "Ekansh",
-                        isWhite: true,
-                        socketChannel: socket,
-                        gameId: "123456789098765432123456789",
-                      )*/
             : const Center(
                 child: SizedBox(child: CircularProgressIndicator.adaptive())));
   }

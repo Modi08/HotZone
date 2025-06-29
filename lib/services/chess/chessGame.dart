@@ -6,7 +6,6 @@ import 'package:nearmessageapp/components/chess/piece.dart';
 import 'package:nearmessageapp/components/chess/square.dart';
 import 'package:nearmessageapp/services/chess/helper_methods.dart';
 import 'package:nearmessageapp/services/storage/keyValueStore.dart';
-import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:nearmessageapp/values/chess/colors.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -453,7 +452,7 @@ class _ChessGameState extends State<ChessGame> {
     board[newRow][newCol] = selectedPiece;
     board[selectedRow][selectedCol] = null;
 
-    debugPrint("$whiteKingPos, $blackKingPos");
+    debugPrint("King Pos: $whiteKingPos, $blackKingPos");
     if (isKingInCheck(!isWhiteTurn)) {
       checkStatus = true;
     } else {
@@ -511,7 +510,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool isKingInCheck(bool isWhiteKing) {
-    debugPrint(isWhiteKing.toString());
+    debugPrint("which kings check is being checked: $isWhiteKing");
     List<int> kingPos = isWhiteKing ? whiteKingPos : blackKingPos;
 
     for (int i = 0; i < 8; i++) {
@@ -525,7 +524,7 @@ class _ChessGameState extends State<ChessGame> {
 
         if (pieceValidMoves
             .any((move) => move[0] == kingPos[0] && move[1] == kingPos[1])) {
-          debugPrint("${board[i][j]!.type}, $kingPos");
+          debugPrint("?? ${board[i][j]!.type}, $kingPos");
           return true;
         }
       }
@@ -534,7 +533,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   String? isSpecialMove(ChessPiece piece, int newCol, bool? hasMoved) {
-    debugPrint("${piece.type}, $hasMoved, $newCol");
+    debugPrint("Special move info ${piece.type}, $hasMoved, $newCol");
 
     if (piece.type == ChessPieceType.king &&
         hasMoved != null &&
@@ -633,7 +632,7 @@ class _ChessGameState extends State<ChessGame> {
   Widget build(BuildContext context) {
     readDataFromLocalStorage("move").then((value) {
       if (value != "") {
-        debugPrint(value);
+        debugPrint("move input $value");
         var currentPos = jsonDecode(value!)["currentPos"];
         var nextPos = jsonDecode(value)["nextPos"];
         String? specialMove = jsonDecode(value)["specialMove"];

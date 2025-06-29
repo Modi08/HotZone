@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/components/activities_tile.dart';
 import 'package:nearmessageapp/services/storage/keyValueStore.dart';
-import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Activitiespage extends StatefulWidget {
@@ -72,6 +71,6 @@ class _ActivitiespageState extends State<Activitiespage> {
             ? Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(children: activitiesWidgetList))
-            : const Center(child: SizedBox(child: Text("No Users Found")));
+            : const Center(child: SizedBox(child: Text("No Activities Found")));
   }
 }
