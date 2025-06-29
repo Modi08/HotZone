@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nearmessageapp/services/storage/keyValueStore.dart';
 import 'package:nearmessageapp/services/storage/userStore.dart';
+import 'package:nearmessageapp/values/general/colors.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:crypto/crypto.dart';
 
@@ -35,16 +36,15 @@ class _UserTileState extends State<UserTile> {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 178, 227, 249),
+          color: foregroundColorPrimary,
           boxShadow: [
             BoxShadow(
-                color:
-                    const Color.fromARGB(255, 193, 193, 193).withOpacity(0.5),
+                color: foregroundShadowColorPrimary,
                 spreadRadius: 8,
                 offset: const Offset(0, 3))
           ],
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color.fromARGB(255, 69, 60, 255))),
+          border: Border.all(color: foregroundColorPrimary)),
       child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
         SizedBox(
           height: 25,
@@ -52,6 +52,7 @@ class _UserTileState extends State<UserTile> {
             children: [
               const Spacer(),
               IconButton(
+                  color: textColorPrimary,
                   key: threeDotsKey,
                   onPressed: () {
                     RenderBox box = threeDotsKey.currentContext!
@@ -116,8 +117,14 @@ class _UserTileState extends State<UserTile> {
             : CircleAvatar(
                 radius: 50, backgroundImage: NetworkImage(widget.profilePic)),
         const Spacer(),
-        Text(widget.name),
-        Text(widget.email),
+        Text(
+          widget.name,
+          style: TextStyle(color: textColorPrimary),
+        ),
+        Text(
+          widget.email,
+          style: TextStyle(color: textColorPrimary),
+        ),
         const Spacer()
       ]),
     );

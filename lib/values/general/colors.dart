@@ -8,3 +8,8 @@ Color textColorSecondary = const Color.fromARGB(255, 0, 0, 0);
 
 Color accentColorPrimary = const Color.fromARGB(255, 255, 123, 0);
 Color accentColorSecondary = const Color.fromARGB(255, 211, 223, 226);
+
+Color foregroundColorPrimary = const Color.fromARGB(255, 255, 69, 0);
+
+
+Color foregroundShadowColorPrimary = const Color.fromARGB(255, 139, 0, 0);

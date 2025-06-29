@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:nearmessageapp/services/storage/keyValueStore.dart';
 import 'package:nearmessageapp/services/storage/msgStore.dart';
+import 'package:nearmessageapp/services/storage/userStore.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Cords {
@@ -17,10 +19,12 @@ WebSocketChannel connectToWebsocket(paramsApiUrl) {
   return socket;
 }
 
-void listendMsg(WebSocketChannel socket, Function refreshPage, DatabaseServiceMsg msgDatabase) {
+void listendMsg(WebSocketChannel socket, Function refreshPage,
+    DatabaseServiceMsg msgDatabase, DatabaseServiceUser userDatabase, String userId) {
   socket.stream.listen((data) {
     Map<String, dynamic> res = jsonDecode(data)["data"];
-    processMsg(res["statusCode"], res, socket, refreshPage, msgDatabase);
+    processMsg(
+        res["statusCode"], res, socket, refreshPage, msgDatabase, userDatabase, userId);
   }).onDone(() {
     socket.sink.close();
   });
@@ -31,8 +35,10 @@ void processMsg(
     Map<String, dynamic> data,
     WebSocketChannel socket,
     Function refreshPage,
-    DatabaseServiceMsg msgDatabase) {
-  print(statusCode.toString());
+    DatabaseServiceMsg msgDatabase,
+    DatabaseServiceUser userDatabase,
+    String userId) {
+  debugPrint(statusCode.toString());
 
   switch (statusCode) {
     case 100: // Empty Message
@@ -48,7 +54,7 @@ void processMsg(
       for (var msg in messages) {
         msgDatabase.insert(Message.fromMap(msg, true));
       }
-      
+
       break;
 
     case 202: // New message recieved
@@ -57,12 +63,28 @@ void processMsg(
 
     case 203: // User List recived
       if (data["userList"] != "[]") {
-        List<dynamic> userList = jsonDecode(data["userList"])[0];
+        List<dynamic> userList = jsonDecode(data["userList"]);
+        List<String> userIdsList = [];
+
+        userIdsList.add(userId);
         for (var user in userList) {
-          print(user.toString());
+          userIdsList.add(user["userId"]);
+          user["isPrimary"] = false;
+          userDatabase.queryById(user["userId"]).then((existingUser) {
+            if (existingUser == null) {
+              userDatabase.insert(User.fromMap(user));
+            } else {
+              userDatabase.update(User.fromMap(user));
+            }
+          });
         }
-      } else {
-        saveDataToLocalStorage("userList", "[0]");
+        userDatabase.queryAllIds().then((allUserIds) {
+          List<String> oldUserIdsList =
+              allUserIds.where((id) => !userIdsList.contains(id)).toList();
+          for (String oldUserId in oldUserIdsList) {
+            userDatabase.delete(oldUserId);
+          }
+        });
       }
 
     case 204: // User recived a challenge

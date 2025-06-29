@@ -38,7 +38,7 @@ class User {
       username: map["username"],
       connectionId: map["connectionId"],
       profilePic: map["profilePic"],
-      isPrimary: map["isPrimary"],
+      isPrimary: map["isPrimary"] == "true" ? true : false,
     );
   }
 }
@@ -106,6 +106,7 @@ class DatabaseServiceUser {
     return null;
   }
 
+  // Get a single row by a parameter
   Future<List<User>?> queryByX(String param, String value) async {
     Database db = await database;
     List<Map<String, dynamic>> results = [];
@@ -140,6 +141,19 @@ class DatabaseServiceUser {
     }
   }
 
+  // Get all userIds from the database
+  Future<List<String>> queryAllIds() async {
+    Database db = await database;
+    List<Map<String, dynamic>> results = await db.query(tableName);
+    if (results.isEmpty) {
+      return [];
+    } else {
+      return results.map((element) {
+        return element["userId"].toString();
+      }).toList();
+    }
+  }
+
   // Update a row in the database
   Future<int> update(User user) async {
     Database db = await database;
@@ -155,6 +169,7 @@ class DatabaseServiceUser {
         .delete(tableName, where: '$columnUserId = ?', whereArgs: [id]);
   }
 
+  // Clear all rows in the database
   Future<int> clearAll() async {
     Database db = await database;
     return await db.delete(tableName);

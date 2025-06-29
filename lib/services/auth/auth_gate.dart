@@ -7,8 +7,7 @@ import 'package:nearmessageapp/services/general/pagerender.dart';
 class AuthGate extends StatefulWidget {
   final DatabaseServiceUser userDatabase;
   final DatabaseServiceMsg? msgDatabase;
-  const AuthGate(
-      {super.key, required this.userDatabase, this.msgDatabase});
+  const AuthGate({super.key, required this.userDatabase, this.msgDatabase});
 
   @override
   State<AuthGate> createState() => _AuthGateState();
@@ -19,6 +18,7 @@ class _AuthGateState extends State<AuthGate> {
   late User userData;
   late DatabaseServiceMsg msgDatabase;
   bool isLoggedin = false;
+  int clearDataCount = 0;
 
   void setisLoggedin(bool value, [String? userID = "", User? userInfo = null]) {
     setState(() {
@@ -34,7 +34,8 @@ class _AuthGateState extends State<AuthGate> {
 
   @override
   void initState() {
-    msgDatabase = widget.msgDatabase ?? DatabaseServiceMsg.instance;
+    msgDatabase = widget.msgDatabase ?? DatabaseServiceMsg.instance;    
+    super.initState();
   }
 
   @override

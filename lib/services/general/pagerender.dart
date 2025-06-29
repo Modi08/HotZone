@@ -64,7 +64,7 @@ class _PageRenderState extends State<PageRender> {
 
     socket.sink.add(
         jsonEncode({"action": "ChatDetails", "lat": data[0], "long": data[1]}));
-    listendMsg(socket, refreshPage, widget.msgDatabase);
+    listendMsg(socket, refreshPage, widget.msgDatabase, widget.userDatabase, widget.userId);
   }
 
   void switchPage(int pageNum) {
@@ -100,12 +100,12 @@ class _PageRenderState extends State<PageRender> {
     });
   }
 
-  @override
+  /*@override
   void dispose() {
     widget.userDatabase.clearAll();
     widget.msgDatabase.clearAll();
     super.dispose();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

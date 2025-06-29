@@ -40,8 +40,8 @@ class _UserpageState extends State<Userpage> {
 
   List<Widget> buildUserItemList(List<dynamic> userList) {
     List<Widget> userWidgetList = userList
-        .map((document) => buildUserItem(document["email"], document["name"],
-            userList.length, document["profilePic"]))
+        .map((document) => buildUserItem(document.email, document.username,
+            userList.length, document.profilePic))
         .toList();
 
     return userWidgetList;
