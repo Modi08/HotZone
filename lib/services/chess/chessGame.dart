@@ -132,23 +132,25 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   void pieceSelected(int row, int col) {
-    if (board[row][col] != null && board[row][col]!.isWhite != widget.isWhite) {
-      return;
-    }
+    debugPrint("New pos $row, $col");
     setState(() {
-      if (board[row][col] != null && (selectedPiece == null)) {
-        if (board[row][col]!.isWhite == isWhiteTurn) {
+      /*debugPrint("sdifhsdf");
+      validMoves.any((element) {
+        debugPrint(element.toString());
+        return false;
+      });*/
+      if (board[row][col] != null && board[row][col]!.isWhite == isWhiteTurn) {
+        if ((selectedPiece == null)) {
+          selectedCol = col;
+          selectedRow = row;
+          selectedPiece = board[row][col];
+        } else if (selectedPiece!.isWhite == board[row][col]!.isWhite) {
           selectedCol = col;
           selectedRow = row;
           selectedPiece = board[row][col];
         }
-      } else if (board[row][col] != null &&
-          selectedPiece!.isWhite == board[row][col]!.isWhite) {
-        selectedCol = col;
-        selectedRow = row;
-        selectedPiece = board[row][col];
-      } else if (selectedPiece != null &&
-          validMoves.any((element) => element[0] == row && element[1] == col)) {
+      } else if (validMoves
+          .any((element) => element[0] == row && element[1] == col)) {
         bool? pieceHasMoved = selectedPiece!.hasMoved;
         if (selectedPiece!.type == ChessPieceType.king) {
           selectedPiece!.hasMoved = true;
@@ -439,7 +441,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   void movePiece(int newRow, int newCol, ChessPiece? piece, bool? hasMoved) {
-    //debugPrint("$selectedRow, $selectedCol, $newRow, $newCol");
+    debugPrint("$selectedRow, $selectedCol, $newRow, $newCol");
 
     if (board[newRow][newCol] != null) {
       if (board[newRow][newCol]!.isWhite) {
@@ -452,7 +454,7 @@ class _ChessGameState extends State<ChessGame> {
     board[newRow][newCol] = selectedPiece;
     board[selectedRow][selectedCol] = null;
 
-    debugPrint("King Pos: $whiteKingPos, $blackKingPos");
+    //debugPrint("King Pos: $whiteKingPos, $blackKingPos");
     if (isKingInCheck(!isWhiteTurn)) {
       checkStatus = true;
     } else {
@@ -510,7 +512,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   bool isKingInCheck(bool isWhiteKing) {
-    debugPrint("which kings check is being checked: $isWhiteKing");
+    //debugPrint("which kings check is being checked: $isWhiteKing");
     List<int> kingPos = isWhiteKing ? whiteKingPos : blackKingPos;
 
     for (int i = 0; i < 8; i++) {
@@ -524,7 +526,7 @@ class _ChessGameState extends State<ChessGame> {
 
         if (pieceValidMoves
             .any((move) => move[0] == kingPos[0] && move[1] == kingPos[1])) {
-          debugPrint("?? ${board[i][j]!.type}, $kingPos");
+          //debugPrint("?? ${board[i][j]!.type}, $kingPos");
           return true;
         }
       }
@@ -533,7 +535,7 @@ class _ChessGameState extends State<ChessGame> {
   }
 
   String? isSpecialMove(ChessPiece piece, int newCol, bool? hasMoved) {
-    debugPrint("Special move info ${piece.type}, $hasMoved, $newCol");
+    //debugPrint("Special move info ${piece.type}, $hasMoved, $newCol");
 
     if (piece.type == ChessPieceType.king &&
         hasMoved != null &&
@@ -632,7 +634,7 @@ class _ChessGameState extends State<ChessGame> {
   Widget build(BuildContext context) {
     readDataFromLocalStorage("move").then((value) {
       if (value != "") {
-        debugPrint("move input $value");
+        debugPrint("move from Opponent $value");
         var currentPos = jsonDecode(value!)["currentPos"];
         var nextPos = jsonDecode(value)["nextPos"];
         String? specialMove = jsonDecode(value)["specialMove"];
@@ -740,7 +742,9 @@ class _ChessGameState extends State<ChessGame> {
                   isWhite: isWhite(index),
                   piece: board[row][col],
                   isSelected: isSelected,
-                  onTap: () => pieceSelected(row, col),
+                  onTap: () {
+                    pieceSelected(row, col);
+                  },
                   isValidMove: isValidMove,
                   isInverted: !widget.isWhite,
                 );
