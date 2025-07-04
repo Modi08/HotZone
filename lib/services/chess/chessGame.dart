@@ -139,7 +139,7 @@ class _ChessGameState extends State<ChessGame> {
         debugPrint(element.toString());
         return false;
       });*/
-      if (board[row][col] != null && board[row][col]!.isWhite == isWhiteTurn) {
+      if (board[row][col] != null && board[row][col]!.isWhite == widget.isWhite) {
         if ((selectedPiece == null)) {
           selectedCol = col;
           selectedRow = row;
@@ -396,9 +396,6 @@ class _ChessGameState extends State<ChessGame> {
             candiateMoves.add([row, 2]);
           }
         }
-
-      default:
-        break;
     }
     return candiateMoves;
   }
