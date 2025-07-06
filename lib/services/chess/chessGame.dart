@@ -133,13 +133,17 @@ class _ChessGameState extends State<ChessGame> {
 
   void pieceSelected(int row, int col) {
     debugPrint("New pos $row, $col");
+    if (widget.isWhite != isWhiteTurn) {
+      return;
+    }
     setState(() {
       /*debugPrint("sdifhsdf");
       validMoves.any((element) {
         debugPrint(element.toString());
         return false;
       });*/
-      if (board[row][col] != null && board[row][col]!.isWhite == widget.isWhite) {
+      if (board[row][col] != null &&
+          board[row][col]!.isWhite == widget.isWhite) {
         if ((selectedPiece == null)) {
           selectedCol = col;
           selectedRow = row;
@@ -405,6 +409,9 @@ class _ChessGameState extends State<ChessGame> {
     List<List<int>> realValidMoves = [];
     List<List<int>> candiateMoves = calulateRawValidMoves(row, col, piece);
 
+    for (var move in candiateMoves) {
+      debugPrint(move.toString());
+    }
     if (checkSim) {
       for (var move in candiateMoves) {
         int endRow = move[0];
@@ -414,17 +421,15 @@ class _ChessGameState extends State<ChessGame> {
             !piece.hasMoved! &&
             (endRow == 7 && (endCol == 6 || endCol == 2) ||
                 (endRow == 0 && (endCol == 6 || endCol == 2)))) {
-          if (endCol == 6) {
-            if (simulatedMoveIsSafe(piece, row, col, endRow, 5) &&
-                simulatedMoveIsSafe(piece, row, col, endRow, 6)) {
-              realValidMoves.add(move);
-            } else {
-              if (simulatedMoveIsSafe(piece, row, col, endRow, 3) &&
-                  simulatedMoveIsSafe(piece, row, col, endRow, 2) &&
-                  simulatedMoveIsSafe(piece, row, col, endRow, 1)) {
-                realValidMoves.add(move);
-              }
-            }
+          if ((endCol == 6) &&
+              simulatedMoveIsSafe(piece, row, col, endRow, 5) &&
+              simulatedMoveIsSafe(piece, row, col, endRow, 6)) {
+            realValidMoves.add(move);
+          } else if ((endCol == 2) &&
+              simulatedMoveIsSafe(piece, row, col, endRow, 3) &&
+              simulatedMoveIsSafe(piece, row, col, endRow, 2) &&
+              simulatedMoveIsSafe(piece, row, col, endRow, 1)) {
+            realValidMoves.add(move);
           }
         } else if (simulatedMoveIsSafe(piece, row, col, endRow, endCol)) {
           realValidMoves.add(move);
@@ -573,7 +578,7 @@ class _ChessGameState extends State<ChessGame> {
         blackKingPos = originalKingPos!;
       }
     }
-
+    debugPrint("$endRow $endCol ${(!kingInCheck).toString()}");
     return !kingInCheck;
   }
 
